@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.1.1
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2025. Jan 10. 08:31
--- Kiszolgáló verziója: 10.4.32-MariaDB
--- PHP verzió: 8.2.12
+-- Létrehozás ideje: 2025. Feb 04. 13:08
+-- Kiszolgáló verziója: 10.4.20-MariaDB
+-- PHP verzió: 8.0.9
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -33,8 +33,34 @@ CREATE TABLE `friendships` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `friend_id` int(11) NOT NULL,
-  `status` enum('pending','accepted','blocked') DEFAULT 'pending',
-  `created_at` datetime DEFAULT current_timestamp()
+  `status` varchar(30) COLLATE utf8_hungarian_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tábla szerkezet ehhez a táblához `groupmembers`
+--
+
+CREATE TABLE `groupmembers` (
+  `user_id` int(11) NOT NULL,
+  `group_id` int(11) NOT NULL,
+  `nickname` varchar(50) COLLATE utf8_hungarian_ci DEFAULT NULL,
+  `joined_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tábla szerkezet ehhez a táblához `groupmessages`
+--
+
+CREATE TABLE `groupmessages` (
+  `id` int(11) NOT NULL,
+  `group_id` int(11) NOT NULL,
+  `sender_id` int(11) NOT NULL,
+  `content` text COLLATE utf8_hungarian_ci NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 -- --------------------------------------------------------
@@ -45,22 +71,10 @@ CREATE TABLE `friendships` (
 
 CREATE TABLE `groups` (
   `id` int(11) NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `description` text DEFAULT NULL,
-  `created_at` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
-
--- --------------------------------------------------------
-
---
--- Tábla szerkezet ehhez a táblához `group_members`
---
-
-CREATE TABLE `group_members` (
-  `group_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `role` enum('member','admin') DEFAULT 'member',
-  `joined_at` datetime DEFAULT current_timestamp()
+  `name` varchar(30) COLLATE utf8_hungarian_ci NOT NULL,
+  `description` varchar(255) COLLATE utf8_hungarian_ci DEFAULT 'Unknown',
+  `creator_id` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 -- --------------------------------------------------------
@@ -73,8 +87,8 @@ CREATE TABLE `messages` (
   `id` int(11) NOT NULL,
   `sender_id` int(11) NOT NULL,
   `receiver_id` int(11) NOT NULL,
-  `content` text NOT NULL,
-  `created_at` datetime DEFAULT current_timestamp()
+  `content` text COLLATE utf8_hungarian_ci NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 -- --------------------------------------------------------
@@ -85,7 +99,7 @@ CREATE TABLE `messages` (
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
-  `name` varchar(100) NOT NULL
+  `name` varchar(30) COLLATE utf8_hungarian_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
@@ -101,17 +115,26 @@ ALTER TABLE `friendships`
   ADD KEY `friend_id` (`friend_id`);
 
 --
+-- A tábla indexei `groupmembers`
+--
+ALTER TABLE `groupmembers`
+  ADD PRIMARY KEY (`user_id`,`group_id`),
+  ADD KEY `group_id` (`group_id`);
+
+--
+-- A tábla indexei `groupmessages`
+--
+ALTER TABLE `groupmessages`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `group_id` (`group_id`),
+  ADD KEY `sender_id` (`sender_id`);
+
+--
 -- A tábla indexei `groups`
 --
 ALTER TABLE `groups`
-  ADD PRIMARY KEY (`id`);
-
---
--- A tábla indexei `group_members`
---
-ALTER TABLE `group_members`
-  ADD KEY `group_id` (`group_id`),
-  ADD KEY `user_id` (`user_id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `creator_id` (`creator_id`);
 
 --
 -- A tábla indexei `messages`
@@ -135,6 +158,12 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT a táblához `friendships`
 --
 ALTER TABLE `friendships`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT a táblához `groupmessages`
+--
+ALTER TABLE `groupmessages`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -163,20 +192,35 @@ ALTER TABLE `users`
 -- Megkötések a táblához `friendships`
 --
 ALTER TABLE `friendships`
-  ADD CONSTRAINT `friendships_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `friendships_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `friendships_ibfk_2` FOREIGN KEY (`friend_id`) REFERENCES `users` (`id`);
 
 --
--- Megkötések a táblához `group_members`
+-- Megkötések a táblához `groupmembers`
 --
-ALTER TABLE `group_members`
-  ADD CONSTRAINT `group_members_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`),
-  ADD CONSTRAINT `group_members_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+ALTER TABLE `groupmembers`
+  ADD CONSTRAINT `groupmembers_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `groupmembers_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`);
+
+--
+-- Megkötések a táblához `groupmessages`
+--
+ALTER TABLE `groupmessages`
+  ADD CONSTRAINT `groupmessages_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`),
+  ADD CONSTRAINT `groupmessages_ibfk_2` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`);
+
+--
+-- Megkötések a táblához `groups`
+--
+ALTER TABLE `groups`
+  ADD CONSTRAINT `groups_ibfk_1` FOREIGN KEY (`creator_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Megkötések a táblához `messages`
 --
 ALTER TABLE `messages`
-  ADD CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `messages_ibfk_2` FOREIGN KEY (`receiver_id`) REFERENCES `users` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
