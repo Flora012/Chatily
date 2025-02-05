@@ -1,59 +1,51 @@
-const toyService = require("../services/groupsService");
+const groupsService = require('../services/groupsService');
 
-exports.getAllGroups = async (req, res, next) =>
-{
+exports.createGroup = async (req, res, next) => {
+    const { name, description } = req.body;
 
-    const shop = shopRepository.getShop(1);
-
-    res.status(200).json(shop.Toys);
-}
-
-exports.createGroup = async (req, res, next) =>
-{
-    let {name, price, company,shopID} = req.body;
-
-    price = Number(price);
-
-    try
-    {
-        const newGroup =
-        {
-            id:id,
-            name: name,
-            description: description,
-            
-            
-        }
-        newGroup = await groupService.createGroup(newGroup);
-        res.status(201).json(newGoup);
-    }
-    catch(error)
-    {
+    try {
+        const newGroup = await groupsService.createGroup({ name, description });
+        res.status(201).json(newGroup);
+    } catch (error) {
         next(error);
     }
-}
+};
 
-exports.getGroup = (req, res, next) =>
-{
-    const {index} = req.params;
+exports.getGroup = async (req, res, next) => {
+    const { id } = req.params;
 
-    const toy = toys[index];
+    try {
+        const group = await groupsService.getGroup(id);
 
-    try
-    {
-        if(!toy)
-        {
-            const error = new Error("Toy not found!");
-    
-            error.status = 404;
-    
-            throw error;
+        if (!group) {
+            return res.status(404).json({ error: "Group not found" });
         }
 
-        res.status(200).json(toy);
-    }
-    catch(error)
-    {
+        res.status(200).json(group);
+    } catch (error) {
         next(error);
     }
-}
+};
+
+exports.updateGroup = async (req, res, next) => {
+    const { id } = req.params;
+    const groupData = req.body;
+
+    try {
+        const updatedGroup = await groupsService.updateGroup(id, groupData);
+        res.status(200).json(updatedGroup);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.deleteGroup = async (req, res, next) => {
+    const { id } = req.params;
+
+    try {
+        await groupsService.deleteGroup(id);
+        res.status(200).json({ message: "Group deleted successfully" });
+    } catch (error) {
+        next(error);
+    }
+};

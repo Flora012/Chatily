@@ -27,7 +27,6 @@ module.exports = (sequelize, DataTypes) => {
         }
     );
 
-    // Alapértelmezett nickname beállítása a user neve alapján
     GroupMembers.addHook("beforeCreate", async (groupMember, options) => {
         const User = sequelize.models.Users;
         if (!groupMember.nickname) {

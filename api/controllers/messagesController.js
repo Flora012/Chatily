@@ -1,58 +1,39 @@
-const toyService = require("../services/messagesService");
+const messagesService = require('../services/messagesService');
 
-exports.getAllMessages = async (req, res, next) =>
-{
+exports.createMessage = async (req, res, next) => {
+    const { sender_id, receiver_id, content } = req.body;
 
-    const shop = shopRepository.getShop(1);
-
-    res.status(200).json(shop.Toys);
-}
-
-exports.createMessage = async (req, res, next) =>
-{
-    let {name, price, company,shopID} = req.body;
-
-    price = Number(price);
-
-    try
-    {
-        const newMessage =
-        {
-            id:id,
-            sender_id: sender_id,
-            receiver_id:receiver_id,
-
-        }
-        newMessage = await messagesService.createMessage(newMessage);
+    try {
+        const newMessage = await messagesService.sendMessage({ sender_id, receiver_id, content, timestamp: new Date() });
         res.status(201).json(newMessage);
-    }
-    catch(error)
-    {
+    } catch (error) {
         next(error);
     }
-}
+};
 
-exports.getMessages = (req, res, next) =>
-{
-    const {index} = req.params;
+exports.getMessage = async (req, res, next) => {
+    const { id } = req.params;
 
-    const toy = toys[index];
+    try {
+        const message = await messagesService.getMessage(id);
 
-    try
-    {
-        if(!toy)
-        {
-            const error = new Error("Toy not found!");
-    
-            error.status = 404;
-    
-            throw error;
+        if (!message) {
+            return res.status(404).json({ error: "Message not found" });
         }
 
-        res.status(200).json(toy);
-    }
-    catch(error)
-    {
+        res.status(200).json(message);
+    } catch (error) {
         next(error);
     }
-}
+};
+
+exports.deleteMessage = async (req, res, next) => {
+    const { id } = req.params;
+
+    try {
+        await messagesService.deleteMessage(id);
+        res.status(200).json({ message: "Message deleted successfully" });
+    } catch (error) {
+        next(error);
+    }
+};
