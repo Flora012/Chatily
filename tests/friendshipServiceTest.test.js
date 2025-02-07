@@ -1,30 +1,35 @@
 require("dotenv").config();
 
-const friendshipService = require("../api/services/friendshipService");
-const friendshipRepository = require("../api/repositories/friendshipRepository");
+const userRepository = require("../api/repositories/userRepository")
 
 jest.mock("../api/db/dbContext", () => require("../__mocks__/db"));
 
-describe("FriendshipService", () => {
+describe("User", () => {
     beforeAll(async () => {
         await require("../__mocks__/db").sequelize.sync({ force: true });
     });
 
-    test("should add a friend", async () => {
-        const friendshipData = { user_id: 1, friend_id: 2 };
-        friendshipRepository.addFriend = jest.fn().mockResolvedValue(friendshipData);
+    describe("UserRepo uj felhasznalo",()=>{
 
-        const result = await friendshipService.addFriend(friendshipData);
-        expect(result).toEqual(friendshipData);
-        expect(friendshipRepository.addFriend).toHaveBeenCalledWith(friendshipData);
-    });
+        beforeAll( async () => 
+            {
+                const newUser =
+                {
+                    id: 1,
+                    name:"Nemtudom",
+                    passwordHash: "ugsvcuq939o12b",
+                    email: "nemtudom@gmail.com"
 
-    test("should get friends", async () => {
-        const friends = [{ id: 2, name: "Friend" }];
-        friendshipRepository.getFriends = jest.fn().mockResolvedValue(friends);
+                };
+    
+                await userRepository.createUser(newUser);
+            });
+    
+            test("GetAllUsers returns length 1", async () => 
+            {
+                expect((await userRepository.getUsers()).length).toBe(1);
+            });
 
-        const result = await friendshipService.getFriends(1);
-        expect(result).toEqual(friends);
-        expect(friendshipRepository.getFriends).toHaveBeenCalledWith(1);
-    });
+
+    })
 });

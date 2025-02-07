@@ -1,5 +1,4 @@
 const db = require("../db/dbContext");
-const { Users } = require("../models");
 
 class UserRepository {
     constructor() {
@@ -14,7 +13,7 @@ class UserRepository {
         return await this.Users.findOne({ where: { id } });
     }
 
-    async getAllUsers() {
+    async getUsers() {
         return await this.Users.findAll();
     }
 

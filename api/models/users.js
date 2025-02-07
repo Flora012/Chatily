@@ -20,6 +20,16 @@ module.exports = (sequelize, DataTypes) =>
             {
                 type: DataTypes.STRING(30),
                 allowNull: false,
+            },
+            passwordHash:
+            {
+                type: DataTypes.STRING(150),
+                allowNull: false,
+            },
+            email: 
+            {
+                type: DataTypes.STRING(40),
+                allowNull: false,
             }
         },
 
@@ -27,7 +37,7 @@ module.exports = (sequelize, DataTypes) =>
             sequelize,
             modelName: "Users",
             timestamps: false,
-            createdAt: false,
+            createdAt: true,
             updatedAt: false,
         }
     )

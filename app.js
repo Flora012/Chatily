@@ -2,16 +2,15 @@ const express = require("express");
 
 const app = express();
 
+const errorHandler = require("./api/middlewares/errorHandler");
+
+
 app.use(express.json());
 
 app.use(express.urlencoded({extended: true}));
 
-app.set("view engine", "ejs");
+app.use(errorHandler.notFoundError);
 
-// ROUTES
-
-app.use(express.static("public"))
-
-
+app.use(errorHandler.showError);
 
 module.exports = app;

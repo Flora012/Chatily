@@ -1,56 +1,58 @@
-const toyService = require("../services/usersService");
+const usersService = require('../services/usersService');
+
+exports.createUser = async (req, res, next) => {
+    const { name, email } = req.body;
+
+    try {
+        const newUser = await usersService.createUser({ name, email });
+        res.status(201).json(newUser);
+    } catch (error) {
+        next(error);
+    }
+};
 
 exports.getAllUsers = async (req, res, next) =>
-{
-
-    const shop = shopRepository.getShop(1);
-
-    res.status(200).json(shop.Toys);
-}
-
-exports.createUsers = async (req, res, next) =>
-{
-    let {name, price, company,shopID} = req.body;
-
-    price = Number(price);
-
-    try
     {
-        const newUser=
-        {
-            id:id,
-            name:name
-        }
-        newUser = await usersService.createUsers(newUser);
-        res.status(201).json(newUser);
-    }
-    catch(error)
-    {
-        next(error);
-    }
-}
-
-exports.getUser = (req, res, next) =>
-{
-    const {index} = req.params;
-
-    const toy = toys[index];
-
-    try
-    {
-        if(!toy)
-        {
-            const error = new Error("Toy not found!");
+        const Users = await usersService.getUsers();
     
-            error.status = 404;
-    
-            throw error;
+        res.status(200).json(Users);
+    }
+
+exports.getUser = async (req, res, next) => {
+    const { id } = req.params;
+
+    try {
+        const user = await usersService.getUser(id);
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
         }
 
-        res.status(200).json(toy);
-    }
-    catch(error)
-    {
+        res.status(200).json(user);
+    } catch (error) {
         next(error);
     }
-}
+};
+
+exports.updateUser = async (req, res, next) => {
+    const { id } = req.params;
+    const userData = req.body;
+
+    try {
+        const updatedUser = await usersService.updateUser(id, userData);
+        res.status(200).json(updatedUser);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.deleteUser = async (req, res, next) => {
+    const { id } = req.params;
+
+    try {
+        await usersService.deleteUser(id);
+        res.status(200).json({ message: "User deleted successfully" });
+    } catch (error) {
+        next(error);
+    }
+};

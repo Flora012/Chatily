@@ -17,7 +17,7 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-const { Users, Groups, Messages, Friendships, GroupMembers, GroupMessages } = require("../models")(sequelize, DataTypes);
+const { Users, Groups, Messages, Friendships, GroupMembers, GroupMessages } = require("../models")(db.sequelize, DataTypes);
 
 db.Users = Users;
 db.Groups = Groups;
