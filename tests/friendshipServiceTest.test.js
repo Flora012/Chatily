@@ -21,12 +21,15 @@ describe("User", () => {
                     email: "nemtudom@gmail.com"
 
                 };
+
     
                 await userRepository.createUser(newUser);
             });
     
             test("GetAllUsers returns length 1", async () => 
             {
+                const users = await userRepository.getUsers();
+                console.log(JSON.stringify(users, null, 2));
                 expect((await userRepository.getUsers()).length).toBe(1);
             });
 

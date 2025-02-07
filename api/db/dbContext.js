@@ -26,6 +26,6 @@ db.Friendships = Friendships;
 db.GroupMembers = GroupMembers;
 db.GroupMessages = GroupMessages;
 
-db.sequelize.sync({ force: true }) 
+db.sequelize.sync({ alter: true }) 
 
 module.exports = db;
