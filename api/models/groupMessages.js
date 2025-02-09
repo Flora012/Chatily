@@ -22,12 +22,12 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: "Users",
+                    model: "User",
                     key: "id",
                 },
             },
             content: {
-                type: DataTypes.TEXT,
+                type: DataTypes.STRING(200),
                 allowNull: false,
             },
             created_at: {

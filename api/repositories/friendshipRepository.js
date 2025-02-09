@@ -1,10 +1,8 @@
 const db = require("../db/dbContext");
-const { Friendships, Users } = require("../models");
-
 class FriendshipRepository {
-    constructor() {
+    constructor(db) {
         this.Friendships = db.Friendships;
-        this.Users = db.Users;
+        this.User = db.User;
     }
 
     async createFriendship(friendship) {
@@ -14,13 +12,13 @@ class FriendshipRepository {
     async getFriendship(id) {
         return await this.Friendships.findOne({
             where: { id },
-            include: [{ model: this.Users, as: "user" }, { model: this.Users, as: "friend" }],
+            include: [{ model: this.User, as: "user" }, { model: this.User, as: "friend" }],
         });
     }
 
     async getAllFriendships() {
         return await this.Friendships.findAll({
-            include: [{ model: this.Users, as: "user" }, { model: this.Users, as: "friend" }],
+            include: [{ model: this.User, as: "user" }, { model: this.User, as: "friend" }],
         });
     }
 
@@ -37,4 +35,4 @@ class FriendshipRepository {
     }
 }
 
-module.exports = new FriendshipRepository();
+module.exports = new FriendshipRepository(db);

@@ -2,35 +2,35 @@
 module.exports = (sequelize,DataTypes)=>{
 
 
-    const Users = require("./users")(sequelize, DataTypes);
+    const User = require("./user")(sequelize, DataTypes);
     const Friendships = require("./friendships")(sequelize, DataTypes);
     const Messages = require("./messages")(sequelize, DataTypes);
     const Groups = require("./groups")(sequelize, DataTypes);
     const GroupMembers = require("./groupMembers")(sequelize, DataTypes);
     const GroupMessages = require("./groupMessages")(sequelize, DataTypes);
     
-    Users.hasMany(Friendships, {
+    User.hasMany(Friendships, {
         foreignKey: "user_id",
         as: "friendships",
     });
     
-    Users.hasMany(Messages, {
+    User.hasMany(Messages, {
         foreignKey: "sender_id",
         as: "sentMessages",
     });
     
-    Users.hasMany(Messages, {
+    User.hasMany(Messages, {
         foreignKey: "receiver_id",
         as: "receivedMessages",
     });
     
-    Users.belongsToMany(Groups, {
+    User.belongsToMany(Groups, {
         through: GroupMembers,
         foreignKey: "user_id",
         as: "groups",
     });
     
-    Users.hasMany(GroupMembers, {
+    User.hasMany(GroupMembers, {
         foreignKey: "user_id",
         as: "groupMembersId",
     });
@@ -40,23 +40,23 @@ module.exports = (sequelize,DataTypes)=>{
         as: "groupId",
     });
     
-    Friendships.belongsTo(Users, {
+    Friendships.belongsTo(User, {
         foreignKey: "user_id",
         as: "user",
     });
     
-    Messages.belongsTo(Users, {
+    Messages.belongsTo(User, {
         foreignKey: "sender_id",
         as: "sender",
     });
     
-    Groups.belongsToMany(Users, {
+    Groups.belongsToMany(User, {
         through: GroupMembers,
         foreignKey: "group_id",
         as: "members",
     });
     
-    GroupMembers.belongsTo(Users, {
+    GroupMembers.belongsTo(User, {
         foreignKey: "user_id",
         as: "user",
     });
@@ -71,14 +71,14 @@ module.exports = (sequelize,DataTypes)=>{
         as: "group",
     });
     
-    GroupMessages.belongsTo(Users, {
+    GroupMessages.belongsTo(User, {
         foreignKey: "sender_id",
         as: "sender",
     });
     
     return  {
         sequelize,
-        Users,
+        User,
         Friendships,
         Messages,
         Groups,

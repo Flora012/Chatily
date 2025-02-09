@@ -3,7 +3,7 @@ const db = require("../db/dbContext");
 class MessagesRepository {
     constructor(db) {
         this.Messages = db.models.Messages;
-        this.Users = db.models.Users;
+        this.User = db.models.User;
     }
 
 
@@ -18,8 +18,8 @@ class MessagesRepository {
     async getMessagesBetweenUsers(userId1, userId2) {
         return await this.Messages.findAll({
             include: [
-                { model: this.Users, as: "sender" },
-                { model: this.Users, as: "receiver" },
+                { model: this.User, as: "sender" },
+                { model: this.User, as: "receiver" },
             ],
             where: {
                 [db.Sequelize.Op.or]: [

@@ -13,9 +13,9 @@ exports.createUser = async (req, res, next) => {
 
 exports.getAllUsers = async (req, res, next) =>
     {
-        const Users = await usersService.getUsers();
+        const User = await usersService.getUsers();
     
-        res.status(200).json(Users);
+        res.status(200).json(User);
     }
 
 exports.getUser = async (req, res, next) => {

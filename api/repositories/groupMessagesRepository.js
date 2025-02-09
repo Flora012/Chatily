@@ -3,7 +3,7 @@ const db = require("../db/dbContext");
 class GroupMessagesRepository {
     constructor(db) {
         this.GroupMessages = db.models.GroupMessages;
-        this.Users = db.models.Users;
+        this.User = db.models.User;
         this.Groups = db.models.Groups;
     }
 

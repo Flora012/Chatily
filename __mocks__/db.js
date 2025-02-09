@@ -19,9 +19,9 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 
-const { Users, Groups, Messages, Friendships, GroupMembers, GroupMessages } = require("../api/models")(db.sequelize,DataTypes);
+const { User, Groups, Messages, Friendships, GroupMembers, GroupMessages } = require("../api/models")(db.sequelize,DataTypes);
 
-db.Users = Users;
+db.User = User;
 db.Groups = Groups;
 db.Messages = Messages;
 db.Friendships = Friendships;

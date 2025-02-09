@@ -1,12 +1,11 @@
 const { Model } = require("sequelize");
-const userRepository = require("../repositories/userRepository");
 
 module.exports = (sequelize, DataTypes) =>
 {
 
-    class Users extends Model {};
+    class User extends Model {};
 
-    Users.init
+    User.init
     (
         {
             id:
@@ -30,17 +29,27 @@ module.exports = (sequelize, DataTypes) =>
             {
                 type: DataTypes.STRING(40),
                 allowNull: false,
+            },
+            profilePicture:
+            {
+                type: DataTypes.STRING(100),
+                allowNull: true,
+            },
+            phoneNumber:
+            {
+                type: DataTypes.STRING(40),
+                allowNull: false,
             }
         },
 
         {
             sequelize,
-            modelName: "Users",
+            modelName: "User",
+            tableName: "User",
             timestamps: false,
             createdAt: true,
-            updatedAt: false,
         }
     )
     
-    return Users;
+    return User;
 }

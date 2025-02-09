@@ -23,12 +23,12 @@ module.exports = (sequelize, DataTypes) =>
 
             receiver_id:
             {
-                type: DataTypes.STRING,
+                type: DataTypes.INTEGER,
                 allowNull:false,            
             },
             content:
             {
-                type:DataTypes.INTEGER,
+                type:DataTypes.STRING(200),
                 allowNull:false,
             }
 

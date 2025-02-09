@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     );
 
     GroupMembers.addHook("beforeCreate", async (groupMember, options) => {
-        const User = sequelize.models.Users;
+        const User = sequelize.models.User;
         if (!groupMember.nickname) {
             const user = await User.findByPk(groupMember.user_id);
             if (user) {

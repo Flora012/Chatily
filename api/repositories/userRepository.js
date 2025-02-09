@@ -1,29 +1,29 @@
 const db = require("../db/dbContext");
 
 class UserRepository {
-    constructor() {
-        this.Users = db.Users;
+    constructor(db) {
+        this.User = db.User;
     }
 
     async createUser(user) {
-        return await this.Users.create(user);
+        return await this.User.create(user);
     }
 
     async getUser(id) {
-        return await this.Users.findOne({ where: { id } });
+        return await this.User.findOne({ where: { id } });
     }
 
     async getUsers() {
-        return await this.Users.findAll();
+        return await this.User.findAll();
     }
 
     async updateUser(id, user) {
-        return await this.Users.update(user, { where: { id } });
+        return await this.User.update(user, { where: { id } });
     }
 
     async deleteUser(id) {
-        return await this.Users.destroy({ where: { id } });
+        return await this.User.destroy({ where: { id } });
     }
 }
 
-module.exports = new UserRepository();
+module.exports = new UserRepository(db);

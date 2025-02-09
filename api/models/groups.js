@@ -1,5 +1,4 @@
 const { Model } = require("sequelize");
-
 module.exports = (sequelize, DataTypes) => {
     class Groups extends Model {}
 
@@ -22,11 +21,9 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: "Users",
+                    model: "user", 
                     key: "id",
-                },
-                onUpdate: "CASCADE",
-                onDelete: "SET NULL",
+                }
             },
         },
         {

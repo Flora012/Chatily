@@ -12,7 +12,7 @@ class GroupMemberRepository {
     async getGroupMembers(groupId) {
         return await this.GroupMembers.findAll({
             where: { group_id: groupId },
-            include: [{ model: db.models.Users, as: "user" }],
+            include: [{ model: db.models.User, as: "user" }],
         });
     }
 
