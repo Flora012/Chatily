@@ -6,30 +6,36 @@ import { QUERY_KEYS } from "@/utils/queryKeys"
 
 // A regisztrációs adatokat küldjük el a backend-nek
 const registration = async (data: RegistrationData): Promise<RegistrationResponse> => {
-    const response = await axiosClient.post("http://localhost:5173/registration", data);
-    console.log({response})
-    return response.data.data;  // Visszaadjuk a választ
-}
+    try {
+        const response = await axiosClient.post("http://localhost:3000/registration/", data);
+        console.log(response.data.data);
+        return response.data.data;  
+    } catch (error: any) {
+        console.error("Regisztrációs hiba:", error.response?.data?.error);
+        throw new Error(error.response?.data?.error || "Regisztráció sikertelen!");
+    }
+};
 
 export const useRegistration = () => {
     const { push } = useRouter();
     return useMutation({
         mutationFn: registration,
         onSuccess(data) {
-            push({ name: 'set-password', params: { token: data.token } }); // Ha sikeres, átirányítunk
+            
+            push(`/set-password/${data.token}`);
+
         },
-        onError(error:any){
-            console.log(error)
-            throw new Error(error.response.data.error)
+        onError(error: any) {
+            console.log("Regisztráció sikertelen:", error.message);
+            throw new Error(error.message);  // Tovább dobjuk a hibaüzenetet
         },
-        
     });
 };
 
 
 const getSetPassword = async (): Promise<SetPasswordResponse> => {
     const {params} = useRoute()
-    const response = await axiosClient.get(`http://172.22.1.219/api/v1/set-password/${params.token}`)
+    const response = await axiosClient.get(`http://localhost:5173/set-password/${params.token}`)
     return response.data
 }
 
@@ -43,19 +49,17 @@ export const useGetSetPassword = () => {
 }
 
 const putSetPassword = async (token: string, data: SetPasswordData) => {
-    const response = await axiosClient.put(`http://172.22.1.219/api/v1/set-password/${token}`, data)
+    const response = await axiosClient.put(`http://localhost:5173/set-password/${token}`, data)
     return response.data
 }
 
 export const usePutSetPassword = () => {
-
     return useMutation(
         {
             mutationFn: ({token, data} : { token: string, data: SetPasswordData }) => putSetPassword(token, data),
         }
     )
 }
-
 
 const postForgottenPassword = async (data: ForgottenPasswordParam) => {
     const response = await axiosClient.post(`http://172.22.1.219/api/v1/password-reset`, data)
@@ -88,21 +92,18 @@ export const useGetForgottenPassword = () => {
     )
 }
 
-
 const putForgottenPassword = async (token: string, data: ForgottenSetPasswordParam) => {
     const response = await axiosClient.put(`http://172.22.1.219/api/v1/password-reset/${token}`, data)
     return response.data
 }
 
 export const usePutForgottenPassword = () => {
-
     return useMutation(
         {
             mutationFn: ({token, data} : { token: string, data: ForgottenSetPasswordParam }) => putForgottenPassword(token, data),
         }
     )
 }
-
 
 const login = async (data: LoginParam): Promise<RegistrationResponse> => {
     const response = await axiosClient.post("http://172.22.1.219/api/v1/login", data)

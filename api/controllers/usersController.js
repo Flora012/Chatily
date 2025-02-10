@@ -34,6 +34,28 @@ exports.getUser = async (req, res, next) => {
     }
 };
 
+exports.getUserPhoneNumber = async (req, res, next) => {
+    const { phoneNumber } = req.params;
+    const userPhoneNumber = await usersService.getUserPhoneNumber(phoneNumber);
+
+    if (!userPhoneNumber) {
+        return true;
+    };
+    return false;
+   
+};
+
+exports.getUserEmail = async (req, res, next) => {
+    const { email } = req.params;
+    const userEmail = await usersService.getUserEmail(email);
+
+    if (!userEmail) {
+        return true;
+    };
+    return false;
+   
+};
+
 exports.updateUser = async (req, res, next) => {
     const { id } = req.params;
     const userData = req.body;

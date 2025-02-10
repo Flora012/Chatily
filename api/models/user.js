@@ -15,7 +15,12 @@ module.exports = (sequelize, DataTypes) =>
                 autoIncrement: true,
             },
 
-            name: 
+            firstname: 
+            {
+                type: DataTypes.STRING(30),
+                allowNull: false,
+            },
+            lastname:
             {
                 type: DataTypes.STRING(30),
                 allowNull: false,
@@ -23,7 +28,7 @@ module.exports = (sequelize, DataTypes) =>
             passwordHash:
             {
                 type: DataTypes.STRING(150),
-                allowNull: false,
+                allowNull: true,
             },
             email: 
             {

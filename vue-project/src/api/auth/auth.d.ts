@@ -2,8 +2,6 @@ export type RegistrationData = {
     lastname: string,
     firstname: string,
     email: string,
-    password: string,
-    passwordAgain: string,
     phoneNumber: string
 }
 
