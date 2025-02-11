@@ -14,8 +14,10 @@ app.use(cors({
 }))
 
 const users = require("./api/routes/authRoutes");
+const loginUser = require("./api/routes/usersRouter")
 
-app.use("/users",users);
+app.use("/user",users);
+app.use("/login",loginUser)
 
 
 module.exports = app;

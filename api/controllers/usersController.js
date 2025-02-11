@@ -1,5 +1,9 @@
 const usersService = require('../services/usersService');
 
+const bcrypt = require('bcrypt'); // Importáld a bcrypt-ot a jelszó hasheléséhez
+
+const authService = require("../services/authService");
+
 exports.createUser = async (req, res, next) => {
     const { name, email } = req.body;
 
@@ -44,6 +48,31 @@ exports.getUserPhoneNumber = async (req, res, next) => {
     return false;
    
 };
+exports.getUserForLogin= async (req,res,next)=>{
+
+    try {
+        console.log(req.body)
+        const {email,password} = req.body;
+        const isOkToLogin= await authService.getUserForLogin(email,password)
+        console.log(password)
+        
+        if(isOkToLogin==1){
+            res.json({data: {message:"Sikeres bejelentkezés", status:"success"}})
+        }
+        else if(isOkToLogin==0){
+            const error = new Error("Az e-mail cím nem megfelelő.")
+            next(error)
+        }
+        else{
+            next(error)
+            const error = new Error("Nem megfelelő jelszó.")        }
+
+    } catch (error) {
+        res.status(500).json(error.message);
+    }
+    
+}
+
 
 exports.getUserEmail = async (req, res, next) => {
     const { email } = req.params;

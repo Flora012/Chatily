@@ -11,8 +11,6 @@ exports.getUsers = async (req, res, next) => {
 exports.createUser = async (req, res, next) => {
     try {
         const { email, firstname, lastname, phoneNumber, password } = req.body;
-
-        // Ellenőrizzük, hogy az e-mail vagy telefonszám már létezik-e
         const existingUser = await userRepository.getUserEmail(email);
         const existingUserTelefonszam = await userRepository.getUserPhoneNumber(phoneNumber);
 
@@ -20,18 +18,9 @@ exports.createUser = async (req, res, next) => {
             console.log("qehbwjlnéwb")
             return res.status(400).json({ error: "Ez az e-mail cím vagy telefonszám már használatban van!" });
         }
+        const hashedPassword = await bcrypt.hash(password, 1); 
 
-        // Jelszó validálás
-        const passwordValidation = isPasswordValid(password);
-        if (!passwordValidation.isValid) {
-            console.log(passwordValidation.message); // Ha szükséges, debug információ
-            return res.status(400).json({ error: passwordValidation.message });
-        }
 
-        // Jelszó hash-elése
-        const hashedPassword = await bcrypt.hash(password, 10); // 10 a saltRounds érték
-
-        // Új felhasználó létrehozása a hashelt jelszóval
         const newUser = {
             firstname: firstname,
             lastname: lastname,
@@ -39,11 +28,11 @@ exports.createUser = async (req, res, next) => {
             phoneNumber: phoneNumber,
             passwordHash: hashedPassword, 
         };
-
+        
         await authService.createUser(newUser);
-
-        // Token generálása
+        
         const token = generateToken(newUser._id); 
+
         console.log(token);
 
         res.json({ data: { message: "Sikeres regisztráció!", status: 'success', userid: newUser._id, token } });
@@ -52,5 +41,27 @@ exports.createUser = async (req, res, next) => {
         res.status(500).json({ error: "Szerverhiba történt!" });
     }
 };
+
+
+exports.getUserForLogin= async (req,res,next)=>{
+
+    try {
+        const {email,password} = req.body;
+        const hashedPassword = await bcrypt.hash(password, 1);
+        const{userEmail,userPasswordHash}= await authService.getUserForLogin(email)
+        console.log(passwordHash)
+        console.log(userPasswordHash)
+        if(email==userEmail && hashedPassword==userPasswordHash){
+            res.json({data: {message:"Sikeres bejelentkezés", status:"success"}})
+        }
+
+    } catch (error) {
+        const {email,password} = req.body;
+        console.log(email)
+        console.log(password)
+        res.status(500).json({ error: "Ezzel a jelszóval és e-maillel nincs regisztrált felhasználó." });
+    }
+    
+}
 
 

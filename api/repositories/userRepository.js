@@ -6,12 +6,7 @@ class UserRepository {
     }
 
     async createUser(user) {
-        const passwordValidation = isPasswordValid(user.password);
-        if (!passwordValidation.isValid) {
-            throw new Error(passwordValidation.message);
-        }
 
-        return await this.Users.create(user);
     }
 
     // A többi metódus változatlan marad
@@ -38,6 +33,7 @@ class UserRepository {
     async getUserEmail(email) {
         return await this.Users.findOne({ where: { email } });
     }
+
 
     // Jelszóellenőrző függvény
     

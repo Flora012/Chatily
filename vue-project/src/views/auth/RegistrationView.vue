@@ -12,9 +12,9 @@ const registrationDataRef = ref<RegistrationData>({
     firstname: '',
     phoneNumber: '',
     password: '', // A jelszó mező// A jelszó megerősítése mező
+    confirmPassword:'',
 });
 
-const confirmPassword= "";
 
 const emailError = ref<string | null>(null);
 const passwordError = ref<string | null>(null);
@@ -66,7 +66,7 @@ const handleRegistration = () => {
     }
 
     // Ellenőrizzük, hogy a két jelszó megegyezik-e
-    if (!validatePasswords(registrationDataRef.value.password, confirmPassword)) {
+    if (!validatePasswords(registrationDataRef.value.password, registrationDataRef.value.confirmPassword)) {
         return;
     }
 
@@ -105,7 +105,7 @@ const handleRegistration = () => {
           <v-text-field v-model="registrationDataRef.email" label="Email" variant="outlined" class="input-field" :error-messages="emailError"></v-text-field>
           <v-text-field v-model="registrationDataRef.phoneNumber" label="Telefonszám" variant="outlined" class="input-field"></v-text-field>
           <v-text-field v-model="registrationDataRef.password" label="Jelszó" type="password" variant="outlined" class="input-field" :error-messages="passwordError"></v-text-field>
-          <v-text-field v-model="confirmPassword" label="Jelszó megerősítése" type="password" variant="outlined" class="input-field" :error-messages="passwordError"></v-text-field>
+          <v-text-field v-model="registrationDataRef.confirmPassword" label="Jelszó megerősítése" type="password" variant="outlined" class="input-field" :error-messages="passwordError"></v-text-field>
           <v-alert v-if="registrationError" type="error" variant="outlined">{{ registrationError }}</v-alert>
         </v-card-text>
         <v-card-actions>

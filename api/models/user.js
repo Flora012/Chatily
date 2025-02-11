@@ -1,3 +1,4 @@
+const { dataTagErrorSymbol } = require("@tanstack/react-query");
 const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) =>
@@ -44,7 +45,8 @@ module.exports = (sequelize, DataTypes) =>
             {
                 type: DataTypes.STRING(40),
                 allowNull: false,
-            }
+            },
+            
         },
 
         {

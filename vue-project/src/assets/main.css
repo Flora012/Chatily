@@ -23,7 +23,8 @@ a,
     display: flex;
     place-items: center;
     flex-wrap: wrap;
-    flex-direction: column
+    flex-direction: column;
+    overflow: hidden;
   }
 
   #app {

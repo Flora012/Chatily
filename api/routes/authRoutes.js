@@ -9,7 +9,7 @@ router.get("/", authController.getUsers);
 router.post("/",authController.createUser);
 
 
-router.get("/set-password",)
+router.post("/",authController.getUserForLogin)
 
 
 module.exports = router;
