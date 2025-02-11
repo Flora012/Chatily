@@ -8,7 +8,7 @@ router.use(cors());  // It
 
 router.get("/", usersController.getAllUsers);
 router.post("/registration", usersController.createUser);
-router.get("/:id", usersController.getUser);
+router.get("/login", usersController.getUser);
 router.delete("/:id", usersController.deleteUser);
 
 

@@ -25,11 +25,28 @@ const validateEmail = (email: string): boolean => {
     return emailPattern.test(email);
 };
 
+
 // Ellenőrizzük, hogy a jelszavak megegyeznek-e
 const validatePasswords = (password: string, confirmPassword: string): boolean => {
+    const minLength = /.{8,}/;
+    const hasUpperCase = /[A-Z]/;
+    const hasSpecialChar = /[.]/;
+
     if (password !== confirmPassword) {
         passwordError.value = "A két jelszó nem egyezik!";
         return false;
+    }
+    else if (!minLength.test(password)) {
+        passwordError.value = "A jelszónak legalább 8 karakter hosszúnak kell lennie."
+        return false;
+    }
+    else if (!hasUpperCase.test(password)) {
+        passwordError.value="A jelszónak tartalmaznia kell legalább egy nagybetűt."
+        return false
+    }
+    else if (!hasSpecialChar.test(password)) {
+        passwordError.value = "A jelszónak tartalmaznia kell legalább egy speciális karaktert, például '.'."
+        return false
     }
     return true;
 };
@@ -78,45 +95,57 @@ const handleRegistration = () => {
 </script>
 
 <template>
-    <v-card>
-        <v-card-title>Regisztráció</v-card-title>
+    <div class="container">
+      <v-card class="form-card">
+        <v-card-title class="title">Regisztráció</v-card-title>
         <v-card-text>
-            <v-text-field v-model="registrationDataRef.lastname" label="Vezetéknév" variant="outlined"></v-text-field>
-            <v-text-field v-model="registrationDataRef.firstname" label="Keresztnév" variant="outlined"></v-text-field>
-            <v-text-field 
-                v-model="registrationDataRef.email" 
-                label="Email" 
-                variant="outlined"
-                :error-messages="emailError"
-            ></v-text-field>
-            <v-text-field v-model="registrationDataRef.phoneNumber" label="Telefonszám" variant="outlined"></v-text-field>
-
-            <!-- Jelszó mező -->
-            <v-text-field 
-                v-model="registrationDataRef.password" 
-                label="Jelszó" 
-                type="password" 
-                variant="outlined" 
-                :error-messages="passwordError"
-            ></v-text-field>
-
-            <!-- Jelszó megerősítése mező -->
-            <v-text-field 
-                v-model="registrationDataRef.confirmPassword" 
-                label="Jelszó megerősítése" 
-                type="password" 
-                variant="outlined" 
-                :error-messages="passwordError"
-            ></v-text-field>
-
-            <v-alert v-if="registrationError" type="error" variant="outlined">
-                {{ registrationError }}
-            </v-alert>
+          <v-text-field v-model="registrationDataRef.lastname" label="Vezetéknév" variant="outlined" class="input-field"></v-text-field>
+          <v-text-field v-model="registrationDataRef.firstname" label="Keresztnév" variant="outlined" class="input-field"></v-text-field>
+          <v-text-field v-model="registrationDataRef.email" label="Email" variant="outlined" class="input-field" :error-messages="emailError"></v-text-field>
+          <v-text-field v-model="registrationDataRef.phoneNumber" label="Telefonszám" variant="outlined" class="input-field"></v-text-field>
+          <v-text-field v-model="registrationDataRef.password" label="Jelszó" type="password" variant="outlined" class="input-field" :error-messages="passwordError"></v-text-field>
+          <v-text-field v-model="registrationDataRef.confirmPassword" label="Jelszó megerősítése" type="password" variant="outlined" class="input-field" :error-messages="passwordError"></v-text-field>
+          <v-alert v-if="registrationError" type="error" variant="outlined">{{ registrationError }}</v-alert>
         </v-card-text>
         <v-card-actions>
-            <v-btn @click="handleRegistration" :loading="isPending">
-                Regisztráció
-            </v-btn>
+          <v-btn @click="handleRegistration" :loading="isPending">Regisztráció</v-btn>
         </v-card-actions>
-    </v-card>
-</template>
+      </v-card>
+    </div>
+  </template>
+  
+  <style scoped>
+  /* Az egész oldal türkiz hátteret kap */
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Teljes magasság kitöltése */
+    background-color: #40E0D0; /* Türkiz háttér */
+    width: 100%;
+  }
+  
+  /* Maga az űrlap */
+  .form-card {
+    width: 100%;
+    max-width: 1000px; /* Kicsit nagyobb, hogy legyen padding */
+    padding: 20px;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  /* A mezők stílusa */
+  .input-field {
+    width: 100%; /* 100%, hogy ne lógjon ki */
+    max-width: 4000px; /* Fix szélesség */
+    margin-bottom: 10px;
+  }
+  
+  /* A mezők lekerekítése Vuetify esetén */
+  ::v-deep(.v-input__control) {
+    border-radius: 8px; /* Lekerekítés */
+  }
+  </style>
+  

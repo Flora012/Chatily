@@ -7,7 +7,7 @@ import { QUERY_KEYS } from "@/utils/queryKeys"
 // A regisztrációs adatokat küldjük el a backend-nek
 const registration = async (data: RegistrationData): Promise<RegistrationResponse> => {
     try {
-        const response = await axiosClient.post("http://localhost:3000/registration/", data);
+        const response = await axiosClient.post("http://localhost:3000/users/", data);
         console.log(response.data.data);
         return response.data.data;  
     } catch (error: any) {
@@ -22,7 +22,7 @@ export const useRegistration = () => {
         mutationFn: registration,
         onSuccess(data) {
             
-            push(`/set-password/${data.token}`);
+            push(`/login/`);
 
         },
         onError(error: any) {
@@ -62,7 +62,7 @@ export const usePutSetPassword = () => {
 }
 
 const postForgottenPassword = async (data: ForgottenPasswordParam) => {
-    const response = await axiosClient.post(`http://172.22.1.219/api/v1/password-reset`, data)
+    const response = await axiosClient.post(`http://localhost:5173/`, data)
     return response.data
 }
 
@@ -106,7 +106,7 @@ export const usePutForgottenPassword = () => {
 }
 
 const login = async (data: LoginParam): Promise<RegistrationResponse> => {
-    const response = await axiosClient.post("http://172.22.1.219/api/v1/login", data)
+    const response = await axiosClient.post("http://localhost:5173/user", data)
     return response.data.data
 }
 
