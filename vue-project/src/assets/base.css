@@ -1,4 +1,7 @@
 /* color palette from <https://github.com/vuejs/theme> */
+.tsqd-parent-container{
+  display: none;
+}
 :root {
   --vt-c-white: #ffffff;
   --vt-c-white-soft: #f8f8f8;
@@ -62,6 +65,9 @@ body {
   min-height: 100vh;
   color: var(--color-text);
   background: var(--color-background);
+  background-color: #305551;
+  align-items: center;
+  align-content: center;
   transition:
     color 0.5s,
     background-color 0.5s;

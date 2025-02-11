@@ -2,10 +2,12 @@ export type RegistrationData = {
     lastname: string,
     firstname: string,
     email: string,
-    phoneNumber: string
+    password: string,
+    phoneNumber: string,
 }
 
 export type RegistrationResponse = {
+    userid: string,
     token: string
 }
 
