@@ -57,6 +57,11 @@ exports.getUserForLogin= async (req,res,next)=>{
         console.log(password)
         
         if(isOkToLogin==1){
+            const token = generateToken(user.id); 
+
+            console.log(token);
+            user.token = token;
+
             res.json({data: {message:"Sikeres bejelentkezés", status:"success"}})
         }
         else if(isOkToLogin==0){

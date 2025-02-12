@@ -78,7 +78,7 @@ const handleRegistration = () => {
         onSuccess: (data) => {
             console.log("Sikeres regisztráció:", data);
             router.push({
-                name: 'set-password',
+                name: 'login',
                 params: { token: data.token, userid: data.userid },
             });
         },
