@@ -11,7 +11,7 @@ const registrationDataRef = ref<RegistrationData>({
     lastname: '',
     firstname: '',
     phoneNumber: '',
-    password: '', // A jelszó mező// A jelszó megerősítése mező
+    password: '', 
     confirmPassword:'',
 });
 

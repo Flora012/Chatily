@@ -38,7 +38,7 @@ const handleLogin = () => {
 
     login(loginParam.value, {
         onSuccess: () => {
-            router.push({ name: 'dashboard' });
+            router.push({ name: 'home' });
         },
         onError: (error: any) => {
             loginError.value = error.response?.data?.error || "Hibás bejelentkezési adatok!";

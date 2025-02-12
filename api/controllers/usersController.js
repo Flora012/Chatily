@@ -57,20 +57,16 @@ exports.getUserForLogin= async (req,res,next)=>{
         console.log(password)
         
         if(isOkToLogin==1){
-            const token = generateToken(user.id); 
-
-            console.log(token);
-            user.token = token;
-
             res.json({data: {message:"Sikeres bejelentkezés", status:"success"}})
         }
         else if(isOkToLogin==0){
             const error = new Error("Az e-mail cím nem megfelelő.")
-            next(error)
+            throw error
         }
         else{
-            next(error)
-            const error = new Error("Nem megfelelő jelszó.")        }
+            const error = new Error("Nem megfelelő jelszó.")        
+            throw error
+        }
 
     } catch (error) {
         res.status(500).json(error.message);
