@@ -1,7 +1,7 @@
 import axiosClient from "@/lib/axios"
-import type { ForgottenPasswordParam, ForgottenSetPasswordParam, LoginParam, RegistrationData, RegistrationResponse, SetPasswordData, SetPasswordResponse } from "./auth"
 import { useMutation, useQuery } from "@tanstack/vue-query"
 import { useRoute, useRouter } from "vue-router"
+import type { ForgottenPasswordParam, ForgottenSetPasswordParam, LoginParam, RegistrationData, RegistrationResponse, SetPasswordResponse } from "./auth"
 import { QUERY_KEYS } from "@/utils/queryKeys"
 
 // A regisztrációs adatokat küldjük el a backend-nek
