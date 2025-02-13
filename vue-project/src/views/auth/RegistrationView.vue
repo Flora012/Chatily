@@ -11,7 +11,7 @@ const registrationDataRef = ref<RegistrationData>({
     lastname: '',
     firstname: '',
     phoneNumber: '',
-    password: '', // A jelszó mező// A jelszó megerősítése mező
+    password: '', 
     confirmPassword:'',
 });
 
@@ -78,7 +78,7 @@ const handleRegistration = () => {
         onSuccess: (data) => {
             console.log("Sikeres regisztráció:", data);
             router.push({
-                name: 'set-password',
+                name: 'login',
                 params: { token: data.token, userid: data.userid },
             });
         },

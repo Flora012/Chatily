@@ -23,7 +23,7 @@ export const useRegistration = () => {
         mutationFn: registration,
         onSuccess(data) {
             
-            push(`/login/`);
+            push(`/login`);
 
         },
         onError(error: any) {
@@ -35,7 +35,7 @@ export const useRegistration = () => {
 
 
 const login = async (data: LoginParam): Promise<RegistrationResponse> => {
-    const response = await axiosClient.post("http://localhost:3000/login/", data)
+    const response = await axiosClient.post("http://localhost:3000/login", data)
     return response.data.data
 }
 
