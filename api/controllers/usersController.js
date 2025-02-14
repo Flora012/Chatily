@@ -74,6 +74,19 @@ exports.getUserForLogin= async (req,res,next)=>{
     
 }
 
+exports.searchUsers = async (req, res, next) => {
+    try {
+        const { query } = req.query;
+        if (!query || query.length < 3) {
+            return res.status(400).json({ error: "A keresési lekérdezés túl rövid." });
+        }
+        const users = await usersService.searchUsers(query);
+        res.status(200).json(users);
+    } catch (error) {
+        next(error);
+    }
+};
+
 
 exports.getUserEmail = async (req, res, next) => {
     const { email } = req.params;

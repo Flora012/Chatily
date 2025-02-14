@@ -9,6 +9,7 @@ router.post("/", usersController.getUserForLogin);
 
 router.get("/",usersController.getAllUsers)
 
+router.get("/search", usersController.searchUsers);
 
 
 

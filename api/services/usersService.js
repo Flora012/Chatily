@@ -21,6 +21,10 @@ class UserService {
         return await userRepository.getUsers();
     }
 
+    async searchUsers(query) {
+        return await userRepository.searchUsers(query);
+    }
+
 
 
 }

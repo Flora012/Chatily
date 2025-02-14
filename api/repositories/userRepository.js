@@ -1,4 +1,6 @@
 const db = require("../db/dbContext");
+const { Op } = require("sequelize"); // Sequelize operátorok
+
 
 class UserRepository {
     constructor(db) {
@@ -7,6 +9,16 @@ class UserRepository {
 
     async createUser(user) {
 
+    }
+    async searchUsers(query) {
+        return await this.Users.findAll({
+            where: {
+                [Op.or]: [
+                    { name: { [Op.iLike]: `%${query}%` } },
+                    { email: { [Op.iLike]: `%${query}%` } }
+                ]
+            }
+        });
     }
 
     // A többi metódus változatlan marad
