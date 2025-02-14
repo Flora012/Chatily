@@ -1,23 +1,23 @@
-// Frissítjük a frontend keresőlekérdezését
 import axiosClient from "@/lib/axios";
-import { ref, watchEffect } from "vue";
+import { useQuery } from "@tanstack/vue-query";
 
-const searchUsers = async (query) => {
+const searchUsers = async (query: string): Promise<any[]> => {
   if (!query || query.trim().length < 3) return [];
-  const response = await axiosClient.get(`http://localhost:3000/search/`, { params: { query } });
-  return response.data;
+  
+  try {
+    const response = await axiosClient.get("/users/search", { params: { query } });
+    console.log("Keresési eredmények:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Hiba történt a keresés során:", error);
+    return [];
+  }
 };
 
-export const useSearchQuery = (searchQuery) => {
-  const results = ref([]);
-
-  watchEffect(async () => {
-    if (searchQuery.value && searchQuery.value.trim().length >= 3) {
-      results.value = await searchUsers(searchQuery.value);
-    } else {
-      results.value = [];
-    }
+export const useSearchQuery = (searchQuery: string) => {
+  return useQuery({
+    queryKey: ["searchUsers", searchQuery], // Cache kulcs a keresési eredményekhez
+    queryFn: () => searchUsers(searchQuery),
+    enabled: searchQuery.length >= 3, // Csak akkor fut le, ha legalább 3 karakter van
   });
-
-  return results;
 };
