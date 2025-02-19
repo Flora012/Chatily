@@ -5,7 +5,9 @@ export type User = {
     profilePicture?: string;
   };
   
-  export type SearchQuery = string; 
+  export type SearchQuery = {
+    param: string; 
+  };
   
   export type SearchUsersResponse = User[]; 
   
