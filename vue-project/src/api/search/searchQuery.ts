@@ -4,6 +4,8 @@ import type { SearchQuery } from "./search";
 import { useMutation, useQuery } from "@tanstack/vue-query"
 
 
+
+
 const search = async (data: SearchQuery)=> {
   const response = await axiosClient.post("http://localhost:3000/search", data)
   return response.data.data
@@ -21,3 +23,5 @@ export const useSearch = () => {
       }
   })
 }
+
+

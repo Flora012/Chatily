@@ -8,6 +8,8 @@ export type User = {
   export type SearchQuery = {
     param: string; 
   };
+
+  
   
   export type SearchUsersResponse = User[]; 
   

@@ -6,4 +6,5 @@ router.get("/", friendsController.getFriends);
 router.post(["/create", "/new"], friendsController.createFriend);
 router.get("/:index", friendsController.getFriends);
 
+
 module.exports = router;

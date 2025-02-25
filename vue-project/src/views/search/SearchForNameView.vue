@@ -2,42 +2,46 @@
 import { ref } from 'vue';
 import { useQuery } from '@tanstack/vue-query';
 import axios from 'axios';
+import type { SearchQuery } from '@/api/search/search';
+import { useRouter } from 'vue-router';
+import { useSearch } from '@/api/search/searchQuery';
 
-const searchQuery = ref('');
+const router = useRouter();
+
+const searchParam = ref<SearchQuery>({
+    param: ''
+});
 const searchResults = ref<any[]>([]);
 const searchError = ref<string | null>(null);
-const isLoading = ref(false);
+
+
+const { mutate: search, isPending } = useSearch();
+
 
 const handleSearch = async () => {
   searchError.value = null;
   searchResults.value = [];
   
-  if (searchQuery.value.length < 3) {
+  if (searchParam.value.param.length < 3) {
     searchError.value = 'Legalább 3 karaktert meg kell adni a kereséshez.';
     return;
   }
-  
-  isLoading.value = true;
-  try {
-    const response = await axios.get(`http://localhost:3000/api/users/search?query=${searchQuery.value}`);
-    
-    if (response.data.message) {
-      searchError.value = response.data.message;
-    } else {
-      searchResults.value = response.data;
-    }
-  } catch (error) {
-    searchError.value = 'Hiba történt a keresés során.';
-  } finally {
-    isLoading.value = false;
-  }
+
+  search(searchParam.value, {
+        onSuccess: () => {
+            console.log("csodalatos")
+        },
+        onError: (error: any) => {
+            searchError.value = error.response?.data?.error;
+        }
+    });
 };
 </script>
 
 <template>
   <div class="container">
-    <v-text-field v-model="searchQuery" label="Keresés név alapján" variant="outlined" class="input-field"></v-text-field>
-    <v-btn color="info" variant="elevated" @click="handleSearch" :loading="isLoading">
+    <v-text-field v-model="searchParam.param" label="Keresés név alapján" variant="outlined" class="input-field"></v-text-field>
+    <v-btn color="info" variant="elevated" @click="handleSearch" :loading="isPending">
       Keresés
     </v-btn>
     
