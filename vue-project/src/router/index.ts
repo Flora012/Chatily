@@ -43,8 +43,8 @@ const router = createRouter({
       component: ProfileView
     },
     {
-      path:"/searchName",
-      name: "searchName",
+      path:"/search",
+      name: "search",
       component:SearchForNameView
     }
   ]
