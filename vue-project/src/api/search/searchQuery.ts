@@ -1,13 +1,13 @@
 import axiosClient from "@/lib/axios";
 import { useRoute, useRouter } from "vue-router"
-import type { SearchQuery } from "./search";
+import type { SearchQuery, SearchQueryResponse } from "./search";
 import { useMutation, useQuery } from "@tanstack/vue-query"
 
 
 
 
-const search = async (data: SearchQuery)=> {
-  const response = await axiosClient.post("http://localhost:3000/search", data)
+const search = async (data: SearchQuery): Promise<SearchQueryResponse>=> {
+  const response = await axiosClient.post("http://localhost:3000/search/", data)
   return response.data.data
 }
 

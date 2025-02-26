@@ -2,15 +2,17 @@ export type User = {
     id: number;
     firstname: string;
     lastname: string;
-    profilePicture?: string;
+    profilePicture: string;
   };
   
   export type SearchQuery = {
     param: string; 
   };
 
+  export type SearchQueryResponse={
+    array: User[];
+  }
   
   
-  export type SearchUsersResponse = User[]; 
   
   

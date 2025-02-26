@@ -7,7 +7,9 @@ router.get("/", authController.getUsers);
 
 router.post("/",authController.createUser);
 
-router.post("/search", usersController.searchUsers);
+router.post("/", usersController.searchUsers);
+
+router.post("/", authController.searchUsers);
 
 
 

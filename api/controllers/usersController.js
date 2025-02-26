@@ -75,9 +75,9 @@ exports.getUserForLogin= async (req,res,next)=>{
 }
 
 exports.searchUsers = async (req, res, next) => {
+    console.log("ojjjjjjjjjjjjjjjjjjjjjv")
     try {
         const { query } = req.query;
-        console.log("ojjjjjjjjjjjjjjjjjjjjjv")
         if (!query || query.length < 3) {
             return res.status(400).json({ error: "A keresési lekérdezés túl rövid." });
         }

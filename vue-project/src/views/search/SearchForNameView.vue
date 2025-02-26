@@ -48,15 +48,8 @@ const handleSearch = async () => {
     <v-alert v-if="searchError" type="error" variant="outlined" class="mt-3">
       {{ searchError }}
     </v-alert>
-    
-    <div v-if="searchResults.length" class="results">
-      <div v-for="user in searchResults" :key="user.id" class="user-card">
-        <img v-if="user.profilePicture" :src="user.profilePicture" alt="Profilkép" class="profile-pic" />
-        <div v-else class="profile-placeholder">&#9679;</div>
-        <span>{{ user.firstname }} {{ user.lastname }}</span>
+  
       </div>
-    </div>
-  </div>
 </template>
 
 <style scoped>

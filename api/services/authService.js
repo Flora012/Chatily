@@ -19,6 +19,10 @@ class AuthService
     async getUserEmail(email) {
         return await userRepository.getUserEmail(email);
     }
+
+    async searchUsers(query) {
+        return await userRepository.searchUsers(query);
+    }
 }
 
 module.exports = new AuthService();

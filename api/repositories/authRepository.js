@@ -23,6 +23,17 @@ class UserRepository
         return newUser;
     }
 
+    async searchUsers(query) {
+        return await this.Users.findAll({
+            where: {
+                [Op.or]: [
+                    { firstname: { [Op.like]: `%${query}%` } },
+                    { lastname: { [Op.like]: `%${query}%` } }
+                ]
+            }
+        });
+    }
+
     async getUserForLogin(email, password) {
         const user = await this.User.findOne({ where: { email } });
         console.log(user)

@@ -14,12 +14,13 @@ class UserRepository {
         return await this.Users.findAll({
             where: {
                 [Op.or]: [
-                    { name: { [Op.iLike]: `%${query}%` } },
-                    { email: { [Op.iLike]: `%${query}%` } }
+                    { firstname: { [Op.like]: `%${query}%` } },
+                    { lastname: { [Op.like]: `%${query}%` } }
                 ]
             }
         });
     }
+
 
     // A többi metódus változatlan marad
     async getUser(id) {
