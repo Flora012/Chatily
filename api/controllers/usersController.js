@@ -1,3 +1,4 @@
+const { User } = require("../models");
 const usersService = require('../services/usersService');
 
 const bcrypt = require('bcrypt'); // Importáld a bcrypt-ot a jelszó hasheléséhez
@@ -74,19 +75,35 @@ exports.getUserForLogin= async (req,res,next)=>{
     
 }
 
+
 exports.searchUsers = async (req, res, next) => {
-    console.log("ojjjjjjjjjjjjjjjjjjjjjv")
     try {
-        const { query } = req.query;
-        if (!query || query.length < 3) {
+        const { param } = req.body;
+
+        if (!param || param.length < 3) {
             return res.status(400).json({ error: "A keresési lekérdezés túl rövid." });
         }
-        const users = await usersService.searchUsers(query);
-        res.status(200).json(users);
+
+        // Lekérjük az összes felhasználót, aki illeszkedik a keresési feltételekre
+        const users = await User.findAll({
+            where: {
+                [Op.or]: [
+                    { firstname: { [Op.like]: `%${param}%` } },
+                    { lastname: { [Op.like]: `%${param}%` } }
+                ]
+            },
+            attributes: ["id", "firstname", "lastname", "profilePicture"] // Csak a szükséges adatokat adjuk vissza
+        });
+
+        // Kizárjuk a bejelentkezett felhasználót a találatok közül
+        const filteredUsers = users.filter(user => user.id !== req.user.id);
+
+        res.status(200).json(filteredUsers);
     } catch (error) {
         next(error);
     }
 };
+
 
 
 exports.getUserEmail = async (req, res, next) => {

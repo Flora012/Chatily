@@ -23,7 +23,7 @@
 export default {
   methods: {
     goToSearch() {
-      this.$router.push('/searchName');
+      this.$router.push('/search');
     },
     toggleMenu() {
       console.log("Menu clicked");

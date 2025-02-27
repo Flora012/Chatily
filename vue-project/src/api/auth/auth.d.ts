@@ -12,6 +12,15 @@ export type RegistrationResponse = {
     token: string
 }
 
+export type User = {
+    id: string;
+    firstname: string;
+    lastname: string;
+    email: string;
+    profilePicture?: string;
+};
+
+
 export type SetPasswordResponse = {
     status: string,
     data: []

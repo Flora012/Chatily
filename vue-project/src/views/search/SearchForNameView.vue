@@ -1,30 +1,34 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useSearch } from '@/api/search/searchQuery';
+import { useCurrentUser } from "@/api/user/useCurrentUser";
 
 const searchParam = ref({ param: '' });
 const searchResults = ref<any[]>([]);
 const searchError = ref<string | null>(null);
 
 const { mutate: search, isPending } = useSearch();
+const { data: currentUser } = useCurrentUser(); // 🔹 Bejelentkezett felhasználó lekérése
 
 const handleSearch = async () => {
-  searchError.value = null;
-  searchResults.value = [];
+    searchError.value = null;
+    searchResults.value = [];
 
-  if (searchParam.value.param.length < 3) {
-    searchError.value = 'Legalább 3 karaktert meg kell adni a kereséshez.';
-    return;
-  }
-
-  search(searchParam.value, {
-    onSuccess: (data) => {
-      searchResults.value = data;  // A 'users' tömb beállítása
-    },
-    onError: (error: any) => {
-      searchError.value = error.message;
+    if (searchParam.value.param.length < 3) {
+        searchError.value = "Legalább 3 karaktert meg kell adni a kereséshez.";
+        return;
     }
-  });
+
+    search(searchParam.value, {
+        onSuccess: (data) => {
+            // 🔹 Kiszűrjük a bejelentkezett felhasználót (ha már betöltődött)
+            console.log(data)
+            searchResults.value = data.filter(user => user.id !== currentUser.value?.id);
+        },
+        onError: (error: any) => {
+            searchError.value = error.response?.data?.error || "Hiba történt a keresés során.";
+        }
+    });
 };
 </script>
 

@@ -1,7 +1,7 @@
 import axiosClient from "@/lib/axios"
 import { useMutation, useQuery } from "@tanstack/vue-query"
 import { useRoute, useRouter } from "vue-router"
-import type { ForgottenPasswordParam, ForgottenSetPasswordParam, LoginParam, RegistrationData, RegistrationResponse, SetPasswordResponse } from "./auth"
+import type { ForgottenPasswordParam, ForgottenSetPasswordParam, LoginParam, RegistrationData, RegistrationResponse, SetPasswordResponse, User } from "./auth"
 import { QUERY_KEYS } from "@/utils/queryKeys"
 
 // A regisztrációs adatokat küldjük el a backend-nek
@@ -33,6 +33,20 @@ export const useRegistration = () => {
     });
 };
 
+const fetchCurrentUser = async (): Promise<User> => {
+    const response = await axiosClient.get("http://localhost:3000/me");
+    return response.data;
+};
+
+export const useCurrentUser = () => {
+    return useQuery({
+        queryKey: ["currentUser"],
+        queryFn: fetchCurrentUser,
+        staleTime: 1000 * 60 * 5, // 5 percig friss marad
+        retry: false
+    });
+};
+
 
 const login = async (data: LoginParam): Promise<RegistrationResponse> => {
     const response = await axiosClient.post("http://localhost:3000/login", data)
@@ -40,19 +54,20 @@ const login = async (data: LoginParam): Promise<RegistrationResponse> => {
 }
 
 export const useLogin = () => {
-    const {push} = useRouter()
+    const { push } = useRouter();
     return useMutation({
         mutationFn: login,
         onSuccess(data) {
-            localStorage.setItem("login", JSON.stringify(data))
-            push({name: 'home'})
+            localStorage.setItem("token", data.token); // Token mentése
+            localStorage.setItem("user", JSON.stringify(data)); // Felhasználói adatok mentése
+            push({ name: 'home' });
         },
-        onError(error:any){
+        onError(error: any) {
             throw new Error(error.response?.data?.error || "Bejelentkezés sikertelen!");
-
         }
-    })
-}
+    });
+};
+
 
 const postForgottenPassword = async (data: ForgottenPasswordParam) => {
     const response = await axiosClient.post(`http://localhost:5173/`, data)

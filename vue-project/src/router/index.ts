@@ -5,8 +5,8 @@ import LoginView from '@/views/auth/LoginView.vue'
 import ForgottenPasswordView from '@/views/auth/ForgottenPasswordView.vue'
 import SetForgottenPasswordView from '@/views/auth/SetForgottenPasswordView.vue'
 import ProfileView from '@/views/profile/ProfileView.vue'
-import HomeView from '@/views/home/HomeView.vue'
 import SearchForNameView from '@/views/search/SearchForNameView.vue'
+import HomeView from '@/views/home/HomeView.vue'
 
 
 const router = createRouter({
@@ -43,8 +43,8 @@ const router = createRouter({
       component: ProfileView
     },
     {
-      path:"/searchName",
-      name: "searchName",
+      path:"/search",
+      name: "search",
       component:SearchForNameView
     }
   ]
