@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt'); // Importáld a bcrypt-ot a jelszó hashelés�
 const User = require("../models/user"); // Ha a fájl nem létezik, készíts egy modellt a felhasználókhoz
 const userRepository = require("../repositories/userRepository");
 const authService = require("../services/authService");
+const { query } = require('express');
 
 exports.getUsers = async (req, res, next) => {
     res.status(200).send(await authService.getUsers());
@@ -40,14 +41,16 @@ exports.createUser = async (req, res, next) => {
 };
 
 exports.searchUsers = async (req, res, next) => {
-    console.log("ojjjjjjjjjjjjjjjjjjjjjv")
     try {
-        const { query } = req.query;
-        if (!query || query.length < 3) {
+        const { param } = req.body;
+        if (!param || param.length < 3) {
             return res.status(400).json({ error: "A keresési lekérdezés túl rövid." });
         }
-        const users = await authService.searchUsers(query);
-        res.status(200).json(users);
+
+        // Feltételezve, hogy az authService.searchUsers egy adatbázis keresést végez
+        const users = await authService.searchUsers(param);
+        
+        res.status(200).json({ users });  // Fontos: { users } objektumként adjuk vissza!
     } catch (error) {
         next(error);
     }

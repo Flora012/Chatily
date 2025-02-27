@@ -1,55 +1,57 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { useQuery } from '@tanstack/vue-query';
-import axios from 'axios';
-import type { SearchQuery } from '@/api/search/search';
-import { useRouter } from 'vue-router';
 import { useSearch } from '@/api/search/searchQuery';
 
-const router = useRouter();
-
-const searchParam = ref<SearchQuery>({
-    param: ''
-});
+const searchParam = ref({ param: '' });
 const searchResults = ref<any[]>([]);
 const searchError = ref<string | null>(null);
 
-
 const { mutate: search, isPending } = useSearch();
-
 
 const handleSearch = async () => {
   searchError.value = null;
   searchResults.value = [];
-  
+
   if (searchParam.value.param.length < 3) {
     searchError.value = 'Legalább 3 karaktert meg kell adni a kereséshez.';
     return;
   }
 
   search(searchParam.value, {
-        onSuccess: () => {
-            console.log("csodalatos")
-        },
-        onError: (error: any) => {
-            searchError.value = error.response?.data?.error;
-        }
-    });
+    onSuccess: (data) => {
+      searchResults.value = data;  // A 'users' tömb beállítása
+    },
+    onError: (error: any) => {
+      searchError.value = error.message;
+    }
+  });
 };
 </script>
 
 <template>
   <div class="container">
-    <v-text-field v-model="searchParam.param" label="Keresés név alapján" variant="outlined" class="input-field"></v-text-field>
+    <v-text-field
+      v-model="searchParam.param"
+      label="Keresés név alapján"
+      variant="outlined"
+      class="input-field"
+    />
     <v-btn color="info" variant="elevated" @click="handleSearch" :loading="isPending">
       Keresés
     </v-btn>
-    
+
     <v-alert v-if="searchError" type="error" variant="outlined" class="mt-3">
       {{ searchError }}
     </v-alert>
-  
+
+    <div class="results">
+      <div v-for="user in searchResults" :key="user.id" class="user-card">
+        <img v-if="user.profilePicture" :src="user.profilePicture" alt="Profilkép" class="profile-pic">
+        <div v-else class="profile-placeholder">?</div>
+        <span class="user-name">{{ user.firstname }} {{ user.lastname }}</span>
       </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -62,7 +64,7 @@ const handleSearch = async () => {
   margin: auto;
 }
 .input-field {
-  width: 100%;
+  width: 100% !important;
   margin-bottom: 10px;
 }
 .results {
@@ -94,5 +96,8 @@ const handleSearch = async () => {
   color: white;
   font-size: 20px;
   margin-right: 10px;
+}
+.user-name {
+  font-weight: bold;
 }
 </style>
