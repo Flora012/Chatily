@@ -23,7 +23,7 @@ const handleSearch = async () => {
         onSuccess: (data) => {
             // 🔹 Kiszűrjük a bejelentkezett felhasználót (ha már betöltődött)
             console.log(data)
-            searchResults.value = data.filter(user => user.id !== currentUser.value?.id);
+            
         },
         onError: (error: any) => {
             searchError.value = error.response?.data?.error || "Hiba történt a keresés során.";
