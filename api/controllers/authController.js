@@ -86,11 +86,9 @@ exports.searchUsers = async (req, res, next) => {
         const users = await userRepository.searchUsers(param);
 
 
-        // 🔹 Ellenőrizzük, hogy a felhasználó be van-e jelentkezve!
-        const loggedInUserId = req.user?.id;
-        const filteredUsers = users.filter(user => user.id !== loggedInUserId);
-         console.log(filteredUsers)
-        res.status(200).json(filteredUsers);
+        // 🔹 Ellenőrizzük, hogy a felhasználó be van-e jelentkezve!         console.log(users)
+        console.log(users)
+        res.status(200).json({users});
     } catch (error) {
         console.error("Keresési hiba:", error);
         res.status(500).json({ error: "Szerverhiba történt!" });

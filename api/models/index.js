@@ -8,6 +8,7 @@ module.exports = (sequelize,DataTypes)=>{
     const Groups = require("./groups")(sequelize, DataTypes);
     const GroupMembers = require("./groupMembers")(sequelize, DataTypes);
     const GroupMessages = require("./groupMessages")(sequelize, DataTypes);
+    const Notification = require("./notification")(sequelize, DataTypes);
     
     User.hasMany(Friendships, {
         foreignKey: "user_id",
@@ -75,6 +76,12 @@ module.exports = (sequelize,DataTypes)=>{
         foreignKey: "sender_id",
         as: "sender",
     });
+
+    User.hasMany(Notification, { foreignKey: "sender_id", as: "sentNotifications" });
+    User.hasMany(Notification, { foreignKey: "receiver_id", as: "receivedNotifications" });
+
+    Notification.belongsTo(User, { foreignKey: "sender_id", as: "sender" });
+    Notification.belongsTo(User, { foreignKey: "receiver_id", as: "receiver" });
     
     return  {
         sequelize,
@@ -84,6 +91,7 @@ module.exports = (sequelize,DataTypes)=>{
         Groups,
         GroupMembers,
         GroupMessages,
+        Notification,
     };
 }
 

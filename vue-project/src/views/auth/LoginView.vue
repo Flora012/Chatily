@@ -38,7 +38,7 @@ const handleLogin = () => {
 
     login(loginParam.value, {
         onSuccess: (response) => {
-            localStorage.setItem('userId', response.userid); // ID mentése a localStorage-ba
+            localStorage.setItem('userEmail', loginParam.value.email); // ID mentése a localStorage-ba
             router.push({ name: 'home' });
         },
         onError: (error: any) => {

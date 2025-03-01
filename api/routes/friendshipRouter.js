@@ -1,10 +1,12 @@
 const express = require("express");
-const router = express.Router();
-const friendsController = require("../controllers/friendsController");
+const friendshipController = require("../controllers/friendshipController");
 
-router.get("/", friendsController.getFriends);
-router.post(["/create", "/new"], friendsController.createFriend);
-router.get("/:index", friendsController.getFriends);
+const router = express.Router();
+
+console.log("ggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg")
+
+router.post("/", friendshipController.createFriendRequest);
 
 
 module.exports = router;
+

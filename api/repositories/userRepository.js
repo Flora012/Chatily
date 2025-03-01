@@ -19,14 +19,14 @@ class UserRepository {
                     { lastname: { [Op.like]: `%${param}%` } }
                 ]
             },
-            attributes: ["id", "firstname", "lastname", "profilePicture"]
+            attributes: ["id", "firstname", "lastname", "profilePicture","email"]
         });
     }
     
 
 
     // A többi metódus változatlan marad
-    async getUser(id) {
+    async getUserById(id) {
         return await this.Users.findOne({ where: { id } });
     }
 
@@ -46,8 +46,15 @@ class UserRepository {
         return await this.Users.findOne({ where: { phoneNumber } });
     }
 
-    async getUserEmail(email) {
-        return await this.Users.findOne({ where: { email } });
+    async getUserByEmail(email) {
+        return await this.Users.findAll({  // ✅ Helyesen használjuk a `this.Users`-t
+            where: {
+                [Op.or]: [
+                    { email: { [Op.like]: `%${email}%` } },
+                ]
+            },
+            attributes: ["id"]
+        });
     }
 
 

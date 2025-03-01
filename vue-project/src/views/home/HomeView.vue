@@ -6,12 +6,26 @@
         <div></div>
         <div></div>
       </div>
-      <div class="search-icon" @click="goToSearch">
-        🔍
-      </div>
+      <div class="search-icon" @click="goToSearch">🔍</div>
     </div>
+
     <div class="content">
-      <div class="sidebar"></div>
+      <div class="sidebar" v-if="menuVisible">
+        <v-list>
+          <v-list-item link @click="goToNotifications">
+            <v-list-item-title>Értesítések</v-list-item-title>
+          </v-list-item>
+          <v-list-item link>
+            <v-list-item-title>Beállítások</v-list-item-title>
+          </v-list-item>
+          <v-list-item link>
+            <v-list-item-title>Profil</v-list-item-title>
+          </v-list-item>
+          <v-list-item link @click="logout">
+            <v-list-item-title style="color: red;">Kijelentkezés</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </div>
       <div class="main-content">
         <v-card class="form-card"></v-card>
       </div>
@@ -21,14 +35,27 @@
 
 <script>
 export default {
+  data() {
+    return {
+      menuVisible: false,
+    };
+  },
   methods: {
     goToSearch() {
-      this.$router.push('/search');
+      this.$router.push("/search");
     },
     toggleMenu() {
-      console.log("Menu clicked");
-    }
-  }
+      this.menuVisible = !this.menuVisible;
+    },
+    goToNotifications() {
+      this.$router.push("/notifications");
+      this.menuVisible = false;
+    },
+    logout() {
+      localStorage.removeItem("userEmail");
+      this.$router.push("/login");
+    },
+  },
 };
 </script>
 
@@ -42,7 +69,7 @@ export default {
 
 .form-card {
   width: 100%;
-  max-width: 1000px; 
+  max-width: 1000px;
   padding: 20px;
   background: rgb(128, 195, 197);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -75,14 +102,21 @@ export default {
 }
 
 .sidebar {
-  width: 700px;
+  width: 250px;
   background-color: grey;
+  padding: 20px;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 70px;
+  z-index: 1000;
 }
 
 .main-content {
   display: flex;
   background-color: white;
-  width: 1500px;
+  width: 100%;
+  margin-left: 20px;
 }
 
 .search-icon {

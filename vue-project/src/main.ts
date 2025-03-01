@@ -16,4 +16,4 @@ app.use(router)
 app.use(vuetify)
 app.use(VueQueryPlugin, {queryClient: queryClient})
 
-app.mount('#app')
+app.mount('#body')
