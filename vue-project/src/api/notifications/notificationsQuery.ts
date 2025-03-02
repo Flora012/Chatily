@@ -5,7 +5,7 @@ import axios from "axios";
 import type { FriendRequest } from "@/api/notifications/notifications";
 
 // 📌 Értesítések lekérése (GET)
-const fetchNotifications = async (): Promise<FriendRequest[]> => {
+const fetchNotifications = async (): Promise<FriendRequest> => {
     const email = localStorage.getItem("userEmail");
     console.log("📩 Küldött email a backendnek:", email);
 

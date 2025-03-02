@@ -2,8 +2,7 @@
 import { ref } from 'vue';
 import { useSearch } from '@/api/search/searchQuery';
 import { useCurrentUser } from "@/api/user/useCurrentUser";
-import axiosClient from "@/lib/axios";
-
+import axiosClient from "@/lib/axios"
 interface User {
     id: number;
     email: string;
@@ -44,17 +43,18 @@ const handleSearch = async () => {
     });
 };
 
-const selectUser = async (user: User) => {
-    if (!selectedUsers.value.includes(user)) {
-        selectedUsers.value.push(user);
+const selectUser = async (data: User) => {
+    if (!selectedUsers.value.includes(data)) {
+        selectedUsers.value.push(data);
 
         // Küldjünk értesítést az adott felhasználónak emailben
         try {
           console.log(selectedUsers.value)
           console.log("fffffffffffffffffffffffffffffffffffffffffffff")
-          console.log(user)
-            await axiosClient.post("http://localhost:3000/notify/",  user);
+          console.log(data)
+            const response = await axiosClient.post("http://localhost:3000/notify",data);
             console.log("zifwhwoddddddddddi")
+            return response.data.data;  
         } catch (error) {
             console.error("Email értesítés hiba:", error);
         }

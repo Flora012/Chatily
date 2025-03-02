@@ -32,15 +32,16 @@ exports.getFriendRequests = async (req, res) => {
 };
 
 const { sendFriendRequest } = require("../repositories/notifyRepository");
+const { Friendships } = require("../db/dbContext");
 
 exports.createFriendRequest = async (req, res) => {
     const { param } = req.body;
     console.log(param)
 
+    console.log("hhhhhhhhhhhhhhhhhhhhh"+param)
     try {
-        const friendship = await sendFriendRequest(userId, friendId);
         const existingRequest = await friendship.findOne({
-            where: { user_id: user.userId, friend_id: user.friendId }
+            where: { user_id: param.user_id, friend_id: param.friend_id }
         });
         if (existingRequest) {
             throw new Error("Már küldtél barátjelölést ennek a személynek.");
@@ -59,8 +60,8 @@ exports.createFriendRequest = async (req, res) => {
     
         // Létrehozzuk a barátjelölést
         const friendship = await Friendships.create({
-            user_id: userId,
-            friend_id: friendId,
+            user_id: user_id,
+            friend_id: friend_id,
             status: "pending"
         });
     
@@ -68,7 +69,7 @@ exports.createFriendRequest = async (req, res) => {
         const sender = await Users.findByPk(userId);
     
         await Notification.create({
-            user_id: friendId, // A bejelölt felhasználónak szól az értesítés
+            user_id: friend_id, // A bejelölt felhasználónak szól az értesítés
             message: `${sender.name} bejelölt ismerősnek.`
         });
     

@@ -25,7 +25,7 @@ class NotifyRepository{
 }
 
 
-module.exports = NotifyRepository(db)
+module.exports = new NotifyRepository(db)
 
 
 
