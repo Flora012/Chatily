@@ -47,7 +47,7 @@ class UserRepository {
     }
 
     async getUserByEmail(email) {
-        return await this.Users.findOne({  
+        return await this.Users.findAll({  // ✅ Helyesen használjuk a `this.Users`-t
             where: {
                 [Op.or]: [
                     { email: { [Op.like]: `%${email}%` } },
