@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { useSearch } from '@/api/search/searchQuery';
 import { useCurrentUser } from "@/api/user/useCurrentUser";
 import axiosClient from "@/lib/axios"
+
 interface User {
     id: number;
     email: string;
@@ -11,14 +12,22 @@ interface User {
     profilePicture?: string;
 }
 
+interface UserFriend {
+    id: number;
+    email: string;
+    firstname: string;
+    lastname: string;
+    profilePicture?: string;
+    friend_Email: string;
+}
+
 const searchParam = ref({ param: '' });
 const searchResults = ref<User[]>([]);
 const searchError = ref<string | null>(null);
-const selectedUsers = ref<User[]>([]);
+const selectedUsers = ref<UserFriend[]>([]);
 
 const { mutate: search, isPending } = useSearch();
 const { data: currentUser } = useCurrentUser(); // 🔹 Bejelentkezett felhasználó lekérése
-searchResults.value = [];
 
 const handleSearch = async () => {
     searchError.value = null;
@@ -29,7 +38,7 @@ const handleSearch = async () => {
     }
 
     search(searchParam.value, {
-        onSuccess: (data: User[]) => {
+        onSuccess: (data: UserFriend[]) => {
             const loggedInEmail = localStorage.getItem('userEmail'); // 🔹 Email lekérése localStorage-ból
             if (loggedInEmail) {
                 searchResults.value = data.filter((user: User) => user.email !== loggedInEmail);
@@ -43,24 +52,35 @@ const handleSearch = async () => {
     });
 };
 
-const selectUser = async (data: User) => {
-    if (!selectedUsers.value.includes(data)) {
-        selectedUsers.value.push(data);
+const selectUser = async (user: User) => {
+    const loggedInEmail = localStorage.getItem('userEmail');
 
-        // Küldjünk értesítést az adott felhasználónak emailben
-        try {
-          console.log(selectedUsers.value)
-          console.log("fffffffffffffffffffffffffffffffffffffffffffff")
-          console.log(data)
-            const response = await axiosClient.post("http://localhost:3000/notify",data);
-            console.log("zifwhwoddddddddddi")
-            return response.data.data;  
-        } catch (error) {
-            console.error("Email értesítés hiba:", error);
-        }
+    if (!loggedInEmail) {
+        console.error("Nincs bejelentkezett felhasználó!");
+        return;
+    }
+
+    const userFriend: UserFriend = {
+        id: user.id,
+        email: user.email,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        profilePicture: user.profilePicture,
+        friend_Email: loggedInEmail, // 🔹 A bejelentkezett felhasználó emailje
+    };
+
+    if (!selectedUsers.value.some(u => u.email === user.email)) {
+        selectedUsers.value.push(userFriend);
+    }
+
+    try {
+        const response = await axiosClient.post("http://localhost:3000/notify", userFriend);
+        console.log("Sikeres értesítés:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Email értesítés hiba:", error);
     }
 };
-
 </script>
 
 <template>
@@ -88,14 +108,13 @@ const selectUser = async (data: User) => {
         <v-btn icon @click="selectUser(user)" style="display: flex; background: white;">
           <div class="friend-placeholder">+</div>
         </v-btn>
-
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.friend-placeholder{
+.friend-placeholder {
   font-size: 20px;
 }
 .container {

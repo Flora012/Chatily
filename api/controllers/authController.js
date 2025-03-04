@@ -12,10 +12,13 @@ exports.getUsers = async (req, res, next) => {
 exports.createUser = async (req, res, next) => {
     try {
         const { email, firstname, lastname, phoneNumber, password } = req.body;
-        const existingUser = await userRepository.getUserEmail(email);
+        const existingUser = await userRepository.getUserByEmail(email);
         const existingUserTelefonszam = await userRepository.getUserPhoneNumber(phoneNumber);
 
+        console.log(existingUser)
+        console.log(existingUserTelefonszam)
         if (existingUser || existingUserTelefonszam) {
+            console.log("mi a fasz")
             return res.status(400).json({ error: "Ez az e-mail cím vagy telefonszám már használatban van!" });
         }
 

@@ -35,10 +35,9 @@ const { sendFriendRequest } = require("../repositories/notifyRepository");
 const { Friendships } = require("../db/dbContext");
 
 exports.createFriendRequest = async (req, res) => {
-    const { param } = req.body;
-    console.log(param)
+    const { id,email, lastname,firstname  } = req.body;
+    console.log(req.body)
 
-    console.log("hhhhhhhhhhhhhhhhhhhhh"+param)
     try {
         const existingRequest = await friendship.findOne({
             where: { user_id: param.user_id, friend_id: param.friend_id }
@@ -56,7 +55,6 @@ exports.createFriendRequest = async (req, res) => {
     
         
     
-        
     
         // Létrehozzuk a barátjelölést
         const friendship = await Friendships.create({
