@@ -12,7 +12,7 @@ exports.getUsers = async (req, res, next) => {
 exports.createUser = async (req, res, next) => {
     try {
         const { email, firstname, lastname, phoneNumber, password } = req.body;
-        const existingUser = await userRepository.getUserEmail(email);
+        const existingUser = await userRepository.getUserByEmail(email);
         const existingUserTelefonszam = await userRepository.getUserPhoneNumber(phoneNumber);
 
         if (existingUser || existingUserTelefonszam) {
@@ -59,7 +59,6 @@ exports.login = async (req, res, next) => {
         }
 
         // 🔹 JWT token generálás
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "24h" });
 
         res.json({
             userid: user.id,

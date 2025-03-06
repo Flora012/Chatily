@@ -12,7 +12,7 @@ class UserRepository {
 
     }
     async searchUsers(param) {
-        return await this.Users.findAll({  // ✅ Helyesen használjuk a `this.Users`-t
+        return await this.Users.findAll({  
             where: {
                 [Op.or]: [
                     { firstname: { [Op.like]: `%${param}%` } },
@@ -47,14 +47,7 @@ class UserRepository {
     }
 
     async getUserByEmail(email) {
-        return await this.Users.findAll({  // ✅ Helyesen használjuk a `this.Users`-t
-            where: {
-                [Op.or]: [
-                    { email: { [Op.like]: `%${email}%` } },
-                ]
-            },
-            attributes: ["id"]
-        });
+        return await this.Users.findOne({ where: { email } });
     }
 
 

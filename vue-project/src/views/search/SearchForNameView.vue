@@ -66,12 +66,14 @@ const selectUser = async (user: User) => {
         firstname: user.firstname,
         lastname: user.lastname,
         profilePicture: user.profilePicture,
-        friend_Email: loggedInEmail, // 🔹 A bejelentkezett felhasználó emailje
+        friend_Email: loggedInEmail, 
     };
 
     if (!selectedUsers.value.some(u => u.email === user.email)) {
         selectedUsers.value.push(userFriend);
     }
+
+    console.log(userFriend)
 
     try {
         const response = await axiosClient.post("http://localhost:3000/notify", userFriend);

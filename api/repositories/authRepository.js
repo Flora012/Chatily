@@ -1,7 +1,6 @@
 const { where } = require("sequelize");
 const db = require("../db/dbContext");
 const bcrypt = require('bcrypt'); // Importáld a bcrypt-ot a jelszó hasheléséhez
-const { generateToken } = require("../utils/jwtUtils");
 
 //nemtudom
 

@@ -1,11 +1,14 @@
 const friendshipService = require("../services/friendshipService");
-const userRepository = require("../repositories/userRepository"); // 🔴 Új: felhasználó adatbázis-kezelő
+const userRepository = require("../repositories/userRepository");
+const friendshipRepository = require("../repositories/friendshipRepository");
+const { sendFriendRequest } = require("../repositories/notifyRepository");
+const { Friendships, User, Notification } = require("../db/dbContext");
 
 exports.getFriendRequests = async (req, res) => {
     console.log("➡ Controller meghívva!");
 
     try {
-        const email = req.body.email; // 🔴 Most már a body-ból vesszük az emailt
+        const { email } = req.body;
         console.log("📩 Kapott email:", email);
 
         if (!email) {
@@ -31,55 +34,61 @@ exports.getFriendRequests = async (req, res) => {
     }
 };
 
-const { sendFriendRequest } = require("../repositories/notifyRepository");
-const { Friendships } = require("../db/dbContext");
-
 exports.createFriendRequest = async (req, res) => {
-    const { param } = req.body;
-    console.log(param)
+    console.log("➡ Barátjelölés létrehozása");
+    const { id, email, friend_Email } = req.body;
 
-    console.log("hhhhhhhhhhhhhhhhhhhhh"+param)
     try {
-        const existingRequest = await friendship.findOne({
-            where: { user_id: param.user_id, friend_id: param.friend_id }
-        });
-        if (existingRequest) {
+        if (!id || !email || !friend_Email) {
+            throw new Error("Hiányzó adatok a barátjelöléshez.");
+        }
+
+        const friend = await userRepository.getUserByEmail(friend_Email);
+        if (!friend) {
+            throw new Error("A megadott barát nem található.");
+        }
+
+        const existingRequest = await friendshipRepository.getPendingRequests(id, friend.id);
+        if (existingRequest.length > 0) {
             throw new Error("Már küldtél barátjelölést ennek a személynek.");
         }
-        res.json({ message: "Barátjelölés elküldve!", friendship });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
 
-        // Ellenőrizzük, hogy már létezik-e ilyen kapcsolat
-        
-    
-        
-    
-        
-    
         // Létrehozzuk a barátjelölést
         const friendship = await Friendships.create({
-            user_id: user_id,
-            friend_id: friend_id,
+            user_id: id,
+            friend_id: friend.id,
             status: "pending"
         });
-    
+
         // Értesítés létrehozása a bejelölt felhasználónak
-        const sender = await Users.findByPk(userId);
-    
+        const sender = await Users.findByPk(id);
         await Notification.create({
-            user_id: friend_id, // A bejelölt felhasználónak szól az értesítés
+            user_id: friend.id,
             message: `${sender.name} bejelölt ismerősnek.`
         });
-    
-        return friendship;
+
+        res.json({ message: "Barátjelölés elküldve!", friendship });
+    } catch (error) {
+        console.error("❌ Hiba a barátjelölés létrehozásakor:", error);
+        res.status(500).json({ error: error.message });
+    }
 };
 
-exports.getUserNotifications = async (userId) => {
-    return await Notification.findAll({
-        where: { user_id: userId },
-        order: [["createdAt", "DESC"]],
-    });
-};
+exports.getUserNotifications = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        if (!userId) {
+            return res.status(400).json({ error: "Hiányzó userId paraméter." });
+        }
 
+        const notifications = await Notification.findAll({
+            where: { user_id: userId },
+            order: [["createdAt", "DESC"]],
+        });
+
+        res.json(notifications);
+    } catch (error) {
+        console.error("❌ Hiba az értesítések lekérésekor:", error);
+        res.status(500).json({ error: "Hiba az értesítések lekérésekor!" });
+    }
+};
