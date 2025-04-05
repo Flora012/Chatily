@@ -1,50 +1,39 @@
-const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
-    class Notification extends Model {}
-
-    Notification.init(
+    const Notification = sequelize.define(
+        "Notification",
         {
-            id: {
-                type: DataTypes.INTEGER,
-                autoIncrement: true,
-                primaryKey: true,
+            message: {
+                type: DataTypes.TEXT,
+                allowNull: false,
             },
             sender_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
-                references: {
-                    model: "user",
-                    key: "id",
-                },
             },
             receiver_id: {
                 type: DataTypes.INTEGER,
-                allowNull: false,
-                references: {
-                    model: "user",
-                    key: "id",
-                },
-            },
-            message: {
-                type: DataTypes.STRING,
                 allowNull: false,
             },
             type: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            is_read: {
-                type: DataTypes.BOOLEAN,
-                defaultValue: false,
+            group_id: { 
+                type: DataTypes.INTEGER,
+                allowNull: true, 
+                references: {
+                    model: 'Groups', 
+                    key: 'id',
+                },
+                onUpdate: 'CASCADE',
+                onDelete: 'SET NULL',
             },
         },
         {
-            sequelize,
-            modelName: "Notification",
+            tableName: "Notifications",
             timestamps: true,
-            createdAt: "created_at",
-            updatedAt: false,
+            underscored:true
         }
     );
 

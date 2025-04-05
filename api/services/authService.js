@@ -23,6 +23,10 @@ class AuthService
     async searchUsers(query) {
         return await userRepository.searchUsers(query);
     }
+
+    async getUsers(){
+            return await userRepository.getUsers();
+        }
 }
 
 module.exports = new AuthService();

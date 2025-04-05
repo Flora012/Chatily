@@ -9,7 +9,8 @@ export type RegistrationData = {
 
 export type RegistrationResponse = {
     userid: string,
-    token: string
+    token: string,
+    email:string,
 }
 
 export type User = {

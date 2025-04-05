@@ -1,11 +1,17 @@
+
 const express = require("express");
-const { getNotifications } = require("../controllers/notifyController");
-
 const router = express.Router();
+const notificationsController = require("../controllers/notifyController");
 
-console.log("oksikaaaaaa")
+router.get("/:userId", notificationsController.getNotifications);
+router.post("/accept", notificationsController.acceptNotification);
+router.post("/reject", notificationsController.rejectNotification);
+router.delete("/:notificationId", notificationsController.deleteNotification);
+router.get("/:friendName/:userId",notificationsController.getNotifications)
 
-router.post("/", getNotifications);
-//
+router.post('/acceptGroup', notificationsController.acceptGroupInvitation);
+router.post('/rejectGroup', notificationsController.rejectGroupInvitation);
+router.post('/block', notificationsController.blockFriend); 
+
 
 module.exports = router;

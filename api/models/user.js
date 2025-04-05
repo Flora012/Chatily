@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) =>
             lastname:
             {
                 type: DataTypes.STRING(30),
-                allowNull: false,
+                allowNull: true,
             },
             passwordHash:
             {
@@ -34,7 +34,7 @@ module.exports = (sequelize, DataTypes) =>
             email: 
             {
                 type: DataTypes.STRING(40),
-                allowNull: false,
+                allowNull: true,
             },
             profilePicture:
             {
@@ -44,7 +44,16 @@ module.exports = (sequelize, DataTypes) =>
             phoneNumber:
             {
                 type: DataTypes.STRING(40),
-                allowNull: false,
+                allowNull: true,
+            },
+            emailHash:
+            {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            passwordResetTokenExpiry: {
+                type: DataTypes.DATE,
+                allowNull: true, 
             },
             
         },

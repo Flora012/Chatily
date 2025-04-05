@@ -1,12 +1,11 @@
+
 const express = require("express");
 const router = express.Router();
 
-const authController = require("../controllers/authController")
+const usersController = require("../controllers/usersController"); 
 
 
-router.post("/", authController.searchUsers);
-
-
+router.post("/", usersController.searchUsers); 
 
 
 module.exports = router;

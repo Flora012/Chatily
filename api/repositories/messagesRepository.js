@@ -1,9 +1,10 @@
+
 const db = require("../db/dbContext");
 
 class MessagesRepository {
     constructor(db) {
-        this.Messages = db.models.Messages;
-        this.User = db.models.User;
+        this.Messages = db.Messages;
+        this.User = db.User;
     }
 
 
@@ -28,6 +29,19 @@ class MessagesRepository {
                 ],
             },
             order: [["createdAt", "DESC"]],
+        });
+    }
+    
+    async getLastMessageBetweenUsers(userId1, userId2) {
+        return await this.Messages.findOne({
+            where: {
+                [db.Sequelize.Op.or]: [
+                    { sender_id: userId1, receiver_id: userId2 },
+                    { sender_id: userId2, receiver_id: userId1 },
+                ],
+            },
+            order: [['createdAt', 'DESC']], 
+            limit: 1, 
         });
     }
 }

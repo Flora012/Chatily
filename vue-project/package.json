@@ -21,6 +21,7 @@
     "@tanstack/react-query": "^5.66.0",
     "@tanstack/vue-query": "^5.66.0",
     "@tanstack/vue-query-devtools": "^5.66.0",
+    "@vueuse/core": "^13.0.0",
     "mosha-vue-toastify": "^1.0.23",
     "pinia": "^2.3.1",
     "vue": "^3.5.13",

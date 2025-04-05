@@ -1,9 +1,12 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { Op } = require("sequelize"); // 🔹 Sequelize operátorok importálása
+const { Op } = require("sequelize"); 
 const {User} = require("../models"); 
 const userRepository = require("../repositories/userRepository");
 const authService = require("../services/authService");
+const usersService = require("../services/usersService");
+
+
 
 exports.getUsers = async (req, res, next) => {
     res.status(200).send(await authService.getUsers());
@@ -19,24 +22,27 @@ exports.createUser = async (req, res, next) => {
             return res.status(400).json({ error: "Ez az e-mail cím vagy telefonszám már használatban van!" });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10); // 🔹 Erősebb hash  
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedEmail = await bcrypt.hash(email, 10);
 
         const newUser = {
             firstname,
             lastname,
             email,
             phoneNumber,
-            passwordHash: hashedPassword, 
+            passwordHash: hashedPassword,
+            emailHash: hashedEmail,
         };
+        const createdUser = await usersService.createUser(newUser);
         
-        await authService.createUser(newUser);
         
-        res.json({ 
-            data: { 
-                message: "Sikeres regisztráció!", 
-                status: "success", 
-                userid: newUser.id 
-            } 
+
+        res.json({
+            data: {
+                message: "Sikeres regisztráció! Ellenőrizze e-mailjét a megerősítő kódhoz.",
+                status: "success",
+                userid: createdUser.id
+            }
         });
     } catch (error) {
         console.error("Regisztrációs hiba:", error);
@@ -58,7 +64,6 @@ exports.login = async (req, res, next) => {
             return res.status(401).json({ error: "Hibás email vagy jelszó!" });
         }
 
-        // 🔹 JWT token generálás
 
         res.json({
             userid: user.id,
@@ -77,6 +82,8 @@ exports.login = async (req, res, next) => {
 exports.searchUsers = async (req, res, next) => {
     try {
         const { param } = req.body;
+        
+        
 
         if (!param || param.length < 3) {
             return res.status(400).json({ error: "A keresési lekérdezés túl rövid." });
@@ -85,8 +92,7 @@ exports.searchUsers = async (req, res, next) => {
         const users = await userRepository.searchUsers(param);
 
 
-        // 🔹 Ellenőrizzük, hogy a felhasználó be van-e jelentkezve!         console.log(users)
-        console.log(users)
+        
         res.status(200).json({users});
     } catch (error) {
         console.error("Keresési hiba:", error);

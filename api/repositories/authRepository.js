@@ -1,8 +1,8 @@
 const { where } = require("sequelize");
 const db = require("../db/dbContext");
-const bcrypt = require('bcrypt'); // Importáld a bcrypt-ot a jelszó hasheléséhez
+const bcrypt = require('bcrypt'); 
 
-//nemtudom
+
 
 
 
@@ -23,7 +23,7 @@ class UserRepository
     }
 
     async searchUsers(query) {
-        return await this.Users.findAll({
+        return await this.User.findAll({
             where: {
                 [Op.or]: [
                     { firstname: { [Op.like]: `%${query}%` } },
@@ -35,20 +35,21 @@ class UserRepository
 
     async getUserForLogin(email, password) {
         const user = await this.User.findOne({ where: { email } });
-        console.log(user)
+        
         if (user==null) {
             return 0; 
         }
         const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
-        console.log(isPasswordValid)
-
+        
         if(isPasswordValid)
         {
-            
-            return 1;
+                
+            const data = { passwordValid: true, userId:user.id}
+            return data;
         }
         else{
-            return 2;
+            const data = { passwordValid: false, userId:null}
+            return data;
         }
             
     }

@@ -1,37 +1,29 @@
-const { Model } = require("sequelize");
 
-module.exports = (sequelize, DataTypes) =>
-{
+const { Model, DataTypes } = require("sequelize");
 
-    class Friendships extends Model {};
+module.exports = (sequelize) => {
+    class Friendships extends Model { }
 
-    Friendships.init
-    (
+    Friendships.init(
         {
-            id:
-            {
+            id: {
                 type: DataTypes.INTEGER,
                 primaryKey: true,
                 autoIncrement: true,
             },
-
-            user_id:
-            {
-                type: DataTypes.INTEGER ,
-                allowNull: false,
-            },
-            friend_id:
-            {
+            receiver_id: { 
                 type: DataTypes.INTEGER,
                 allowNull: false,
             },
-            status:
-            {
+            sender_id: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+            },
+            status: {
                 type: DataTypes.STRING(30),
                 allowNull: false,
-            }
+            },
         },
-
         {
             sequelize,
             modelName: "Friendships",
@@ -39,9 +31,9 @@ module.exports = (sequelize, DataTypes) =>
             createdAt: true,
             updatedAt: false,
         }
-    )
-
-    return Friendships
+    );
 
 
-}
+
+    return Friendships;
+};

@@ -39,6 +39,11 @@
   --section-gap: 160px;
 }
 
+body{
+  margin: 0;
+}
+
+
 @media (prefers-color-scheme: dark) {
   :root {
     --color-background: var(--vt-c-black);
@@ -69,10 +74,9 @@ body {
   min-height: 100vh;
   color: var(--color-text);
   background: var(--color-background);
-  background-color: #305551;
+  background-color: #e2c6ec;
   align-items: center;
   align-content: center;
-  overflow: hidden;
   
   transition:
     color 0.5s,
