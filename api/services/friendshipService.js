@@ -1,8 +1,7 @@
-
 const FriendshipRepository = require('../repositories/friendshipRepository');
 const userRepository = require('../repositories/userRepository')
 const { Friendships, User, Messages, GroupMembers, Groups, Nickname } = require('../db/dbContext')
-const friendshipRepository = new FriendshipRepository(Friendships, User, Messages, Nickname) 
+const friendshipRepository = new FriendshipRepository(Friendships, User, Messages, Nickname)
 const messagesRepository = require("../repositories/messagesRepository")
 
 class FriendshipService {
@@ -11,13 +10,11 @@ class FriendshipService {
         try {
             const requests = await friendshipRepository.getPendingRequests(userId);
 
-            
             if (!requests || requests.length === 0) {
-                
+
                 return [];
             }
 
-            
             const formattedRequests = await Promise.all(
                 requests.map(async (request) => {
                     const user = await User.findByPk(request.receiver_id, {
@@ -41,10 +38,10 @@ class FriendshipService {
     async getNickname(senderId, receiverId) {
         try {
             const nickname = await this.findNicknameBySenderAndReceiver(senderId, receiverId);
-            return nickname ? nickname.nickname : null; 
+            return nickname ? nickname.nickname : null;
         } catch (error) {
             console.error('Error getting nickname:', error);
-            return null; 
+            return null;
         }
     }
 
@@ -63,7 +60,7 @@ class FriendshipService {
 
     async createMessage(sender_id, receiver_id, content) {
         try {
-            
+
             const newMessage = await messagesRepository.createMessage(
                 sender_id,
                 receiver_id,
@@ -72,37 +69,26 @@ class FriendshipService {
             return newMessage;
         } catch (error) {
             console.error("Hiba az üzenet létrehozásakor a serviceben:", error);
-            throw error; 
+            throw error;
         }
     };
 
-    async getFriends(userId) {
-        
-        try {
-            
-            return await friendshipRepository.getFriends(userId); 
-        } catch (error) {
-            console.error('Hiba a barátok lekérésekor:', error);
-            throw error;
-        }
-    }
-
     async getFriendsOk(userId) {
-        
+
         try {
             const friendsIds = await friendshipRepository.getFriends(userId);
             const friendDetails = await Promise.all(friendsIds.map(async (friendId) => {
                 const friend = await userRepository.getUserById(friendId);
-                const nickname = await this.getNickname(userId, friendId); 
+                const nickname = await this.getNickname(userId, friendId);
                 return {
-                    ...friend, 
+                    ...friend,
                     nickname: nickname,
                 };
             }));
             return friendDetails;
         } catch (error) {
             console.error('Error fetching friends:', error);
-            throw error; 
+            throw error;
         }
     }
 
@@ -117,29 +103,29 @@ class FriendshipService {
 
     async deleteFriendship(friendId, userId) {
         try {
-          await friendshipRepository.deleteFriendship(friendId,userId);
+            await friendshipRepository.deleteFriendship(friendId, userId);
         } catch (error) {
-          console.error('Error deleting friendship in service:', error);
-          throw error;
+            console.error('Error deleting friendship in service:', error);
+            throw error;
         }
-      }
+    }
 
     async getFriends(userId) {
-        
+
         try {
-            
-            const friendsIds = await friendshipRepository.getFriends(userId); 
-            
+
+            const friendsIds = await friendshipRepository.getFriends(userId);
+
             const friendDetails = [];
             for (const friendId of friendsIds) {
-                
-                const friend = await userRepository.getUserById(friendId); 
-                
+
+                const friend = await userRepository.getUserById(friendId);
+
                 friendDetails.push(friend);
             }
-            
 
-            return friendDetails; 
+
+            return friendDetails;
         } catch (error) {
             console.error('Hiba a barátok lekérésekor:', error);
             throw error;
@@ -187,14 +173,14 @@ class FriendshipService {
     }
     async getUserById(userId) {
         try {
-            
+
             return await userRepository.getUserById(userId);
         } catch (error) {
             console.error('Hiba a felhasználó lekérésekor:', error);
             throw error;
         }
     }
-    
+
     async createOrUpdateNickname(data) {
         return await friendshipRepository.createOrUpdateNickname(data);
     }

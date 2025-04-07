@@ -1,5 +1,4 @@
-
-const { User, Notification, Friendships,GroupMembers,Blocks } = require('../db/dbContext');
+const { User, Notification, Friendships, GroupMembers, Blocks } = require('../db/dbContext');
 const { Op } = require('sequelize');
 
 class NotifyRepository {
@@ -28,17 +27,17 @@ class NotifyRepository {
                     attributes: ["firstname", "lastname"],
                 }],
                 raw: true,
-                nest: true, 
+                nest: true,
             });
         } catch (error) {
             console.error("Error in getUserNotifications repository:", error);
             throw error;
         }
     }
-    async deleteNotificationBySenderAndReceiver(senderId, receiverId,message) {
+    async deleteNotificationBySenderAndReceiver(senderId, receiverId, message) {
         try {
             return await this.Notification.destroy({
-                where: { sender_id: senderId, receiver_id: receiverId,type:message },
+                where: { sender_id: senderId, receiver_id: receiverId, type: message },
             });
         } catch (error) {
             console.error("Error in deleteNotificationBySenderAndReceiver repository:", error);
@@ -61,7 +60,7 @@ class NotifyRepository {
             await Friendships.destroy({
                 where: {
                     [Op.or]: [
-                        { sender_id: senderId, receiver_id: receiverId},
+                        { sender_id: senderId, receiver_id: receiverId },
                         { sender_id: receiverId, receiver_id: senderId }
                     ]
                 }
@@ -72,13 +71,13 @@ class NotifyRepository {
         }
     }
 
-    async deleteGroupMemberByNotification(senderId, receiverId,message) {
+    async deleteGroupMemberByNotification(senderId, receiverId, message) {
         try {
             await GroupMembers.destroy({
                 where: {
                     [Op.or]: [
                         { sender_id: senderId, receiver_id: receiverId, type: message },
-                        { sender_id: receiverId, receiver_id: senderId,type: message }
+                        { sender_id: receiverId, receiver_id: senderId, type: message }
                     ]
                 }
             });
@@ -88,8 +87,8 @@ class NotifyRepository {
         }
     }
     async create(data) {
-        
-        
+
+
         return await this.Notification.create(data);
     }
     async getNotificationById(notificationId) {

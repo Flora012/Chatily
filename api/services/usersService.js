@@ -1,4 +1,3 @@
-
 const userRepository = require('../repositories/userRepository');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
@@ -38,18 +37,14 @@ class UserService {
         }
     }
 
-
-    
-
     async isBlocked(senderId, receiverId) {
         try {
             return await userRepository.isBlocked(senderId, receiverId);
         } catch (error) {
             console.error('Error checking blocked status in service:', error);
-            throw error; 
+            throw error;
         }
     }
-
 
     async checkEmailExists(email) {
         try {
@@ -61,22 +56,32 @@ class UserService {
         }
     }
 
-    async  sendVerificationEmail(email, code) {
+    async checkEmailandPhoneNumberExists(email, phoneNumber) {
+        try {
+            const user = await userRepository.getUserByEmail(email);
+            const userPhoneNumber = await userRepository.getUserPhoneNumber(phoneNumber);
+            const existing = [user !== null, userPhoneNumber !== null];
 
+            return existing;
+        } catch (error) {
+            return error;
+        }
+    }
+
+    async sendVerificationEmail(email, code) {
         const transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 465,
-            secure: true, 
+            secure: true,
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS,
             },
             tls: {
-                rejectUnauthorized: false, 
+                rejectUnauthorized: false,
             },
         });
-        
-    
+
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: email,
@@ -84,43 +89,41 @@ class UserService {
             text: `A megerősítő kódod: ${code}`,
             html: `<p>A megerősítő kódod: <b>${code}</b></p>`,
         };
-    
+
         await transporter.sendMail(mailOptions);
     }
-    
-    async  verifyEmail(email, code) {
+
+    async verifyEmail(email, code) {
         const user = await userRepository.findUserByVerificationCode(email, code);
         if (!user) {
             throw new Error('Invalid verification code');
         }
-        await userRepository.updateUserVerificationStatus(user.id, true, null); 
+        await userRepository.updateUserVerificationStatus(user.id, true, null);
     }
-    
 
-    async  sendVerificationCode(email) {
-        const verificationCode = await this.generateVerificationCode(); 
+    async sendVerificationCode(email) {
+        const verificationCode = await this.generateVerificationCode();
         await this.sendVerificationEmail(email, verificationCode);
         return verificationCode;
     }
 
-    async  forgottenPasswordEmail(email,emailhash) {
+    async forgottenPasswordEmail(email, emailhash) {
         const transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 465,
-            secure: true, 
+            secure: true,
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS,
             },
             tls: {
-                rejectUnauthorized: false, 
+                rejectUnauthorized: false,
             },
         });
         const expiryTime = new Date();
         expiryTime.setHours(expiryTime.getHours() + 24);
         await userRepository.updatePasswordResetExpiry(email, expiryTime);
 
-    
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: email,
@@ -128,14 +131,13 @@ class UserService {
             text: `Elfelejtett jelszó visszaállítása`,
             html: `<p>A jelszavadat az alábbi linkre kattintva tudod visszaállítani (24 órán belül érvényes): 
                 <a href="http://localhost:5173/forgotten-password/${emailhash}">Jelszó visszaállítása</a></p>`,
-        };        
-    
+        };
+
+        console.log(mailOptions)
+
         await transporter.sendMail(mailOptions);
     }
-    
 
-    
-    
     async generateVerificationCode() {
         return Math.floor(100000 + Math.random() * 900000).toString();
     }
@@ -148,10 +150,10 @@ class UserService {
             throw error;
         }
     }
-    
-    async updateUserEmail(userId, newEmail,hashedEmail) {
+
+    async updateUserEmail(userId, newEmail, hashedEmail) {
         try {
-            await userRepository.updateUserEmail(userId, newEmail,hashedEmail);
+            await userRepository.updateUserEmail(userId, newEmail, hashedEmail);
         } catch (error) {
             console.error('Error updating user email in service:', error);
             throw error;
@@ -173,26 +175,6 @@ class UserService {
         return await userRepository.createUser(user);
     }
 
-    async getUser(id) {
-        return await userRepository.getUser(id);
-    }
-
-    async updateUser(id, user) {
-        return await userRepository.updateUser(id, user);
-    }
-
-    async deleteUser(id) {
-        return await userRepository.deleteUser(id);
-    }
-
-    async getUsers(){
-        return await userRepository.getUsers();
-    }
-
-    async getUserByEmail(email) {
-        return await userRepository.getUserByEmail(email);
-    }
-
     async getUserById(userId) {
         try {
             return await userRepository.getUserByIdForMessages(userId);
@@ -201,8 +183,6 @@ class UserService {
             throw error;
         }
     }
-
-    
 }
 
 module.exports = new UserService();

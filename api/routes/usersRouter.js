@@ -18,37 +18,33 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 
-router.post("/sendVerificationCode/:email", usersController.sendVerificationCode);
 
-router.post("/sendForgottenPasswordEmail/:email", usersController.sendForgottenPasswordEmail);
-
-
-router.post("/", usersController.getUserForLogin);
-router.get("/", usersController.getAllUsers);
 router.get("/loggedIn/:loggedInEmail", usersController.getUser);
-router.post("/search", usersController.searchUsers);
-router.get('/:userId', usersController.getUserById);
-router.post('/verify', usersController.verifyEmail);     
-
+router.post("/reset-password", usersController.resetPassword);
+router.post('/checkEmailExists', usersController.checkEmailExists);
+router.post('/checkEmailandPhoneNumberExists', usersController.checkEmailandPhoneNumberExists);
+router.post("/sendForgottenPasswordEmail/:email", usersController.sendForgottenPasswordEmail);
+router.post("/sendVerificationCode/:email", usersController.sendVerificationCode);
 router.get("/isBlocked/:senderId/:receiverId",usersController.isBlockedUser)
 router.get('/blocked/:userId', usersController.getBlockedUsers); 
-router.delete('/unblock/:userId/:blockedUserId', usersController.unblockUser); 
-
-
-
-router.put('/changePassword', usersController.changePassword);
-
-router.put('/deleteAccount/:userId', usersController.deleteAccount); 
-
-
-
-router.post("/reset-password", usersController.resetPassword);
-
-
-
-router.post('/checkEmailExists', usersController.checkEmailExists);
-router.put('/updateUserEmail', usersController.updateUserEmail);
+router.get('/:userId', usersController.getUserById);
 router.post('/uploadProfilePicture', upload.single('profilePicture'), usersController.uploadProfilePicture);
+router.put('/changePassword', usersController.changePassword);
+router.put('/deleteAccount/:userId', usersController.deleteAccount); 
+router.delete('/unblock/:userId/:blockedUserId', usersController.unblockUser); 
+router.post("/", usersController.getUserForLogin);
+router.put('/updateUserEmail', usersController.updateUserEmail);
+
+
+
+
+
+
+
+
+//router.post("/search", usersController.searchUsers);
+//router.post('/verify', usersController.verifyEmail);     
+//router.put('/updateUser', usersController.updateUser)
 
 
 module.exports = router;

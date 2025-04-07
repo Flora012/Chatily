@@ -12,6 +12,8 @@ exports.getUsers = async (req, res, next) => {
     res.status(200).send(await authService.getUsers());
 };
 
+
+
 exports.createUser = async (req, res, next) => {
     try {
         const { email, firstname, lastname, phoneNumber, password } = req.body;
@@ -24,6 +26,11 @@ exports.createUser = async (req, res, next) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const hashedEmail = await bcrypt.hash(email, 10);
+
+
+        console.log(hashedEmail)
+        console.log(req.body)
+        
 
         const newUser = {
             firstname,

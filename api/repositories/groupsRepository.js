@@ -5,7 +5,7 @@ class GroupRepository {
         this.Groups = db.Groups;
     }
 
-    
+
     async getGroup(id) {
         return await this.Groups.findOne({
             where: {
@@ -13,19 +13,19 @@ class GroupRepository {
             },
         });
     }
-    async createGroup  (name)  {
+    async createGroup(name) {
 
-        
-        
-        return await  this.Groups.create({
+
+
+        return await this.Groups.create({
             name: name.name,
             description: name.description,
             creator_id: name.loggedInUserId,
-          });
-      };
+        });
+    };
 
-      
-      async renameGroup(groupId, newName) {
+
+    async renameGroup(groupId, newName) {
         try {
             const group = await this.Groups.findByPk(groupId);
             if (!group) {
@@ -51,28 +51,6 @@ class GroupRepository {
             console.error('Error changing group description in repository:', error);
             throw error;
         }
-    }
-
-    async updateGroup(id, group) {
-        return await this.Groups.update(
-            {
-                name: group.name,
-                description: group.description,
-            },
-            {
-                where: {
-                    id: id,
-                },
-            }
-        );
-    }
-
-    async deleteGroup(id) {
-        return await this.Groups.destroy({
-            where: {
-                id: id,
-            },
-        });
     }
 }
 

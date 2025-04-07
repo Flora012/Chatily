@@ -7,23 +7,28 @@ const notificationsController = require("../controllers/notifyController");
 
 
 
-
-router.post('/nicknames', friendshipController.createOrUpdateNickname);
-
-
-router.get('/nickname/:senderId/:receiverId', friendshipController.findNicknameBySenderAndReceiver);
-
-
-router.post('/messages', friendshipController.createMessage);
-router.get('/messages/:friendId/:userId', friendshipController.getMessages);
 router.get('/:userId', friendshipController.getFriends);
-router.get('/lastMessage/:friendId/:loggedInUserId', friendshipController.getLastMessage);
-router.get('/friendRequests/:userId', friendshipController.getFormattedNotifications);
-router.get('/checkIfFriends/:userId1/:userId2', friendshipController.checkIfFriends);
-router.get('/groups/:userId', friendshipController.getGroups);
-router.post('/', friendshipController.createFriendRequest);
 router.get('/friends/:userId', friendshipController.getFriendsWithProfilePicture);
+router.get('/checkIfFriends/:userId1/:userId2', friendshipController.checkIfFriends);
+router.post('/', friendshipController.createFriendRequest);
+router.get('/nickname/:senderId/:receiverId', friendshipController.findNicknameBySenderAndReceiver);
 router.delete('/:friendId/:userId', friendshipController.deleteFriendship);
+router.get('/lastMessage/:friendId/:loggedInUserId', friendshipController.getLastMessage);
+router.post('/nicknames', friendshipController.createOrUpdateNickname);
+router.get('/messages/:friendId/:userId', friendshipController.getMessages);
+router.post('/messages', friendshipController.createMessage);
+
+
+
+
+
+
+
+
+
+
+//router.get('/friendRequests/:userId', friendshipController.getFormattedNotifications);
+//router.get('/groups/:userId', friendshipController.getGroups);
 
 
 

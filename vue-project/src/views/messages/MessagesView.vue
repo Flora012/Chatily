@@ -47,21 +47,23 @@
       </div>
     </div>
     <v-dialog v-model="isNicknameModalOpen" max-width="500">
-      <v-card>
-        <v-card-title>Becenév beállítása</v-card-title>
-        <v-card-text>
-          <v-text-field
-            v-model="newNickname"
-            label="Új becenév"
-            variant="outlined"
-          />
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="primary" @click="saveNickname">Mentés</v-btn>
-          <v-btn color="secondary" @click="closeNicknameModal">Mégse</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+  <v-card>
+    <v-card-title>Becenév beállítása</v-card-title>
+    <v-card-text>
+      <v-text-field
+        v-model="newNickname"
+        label="Új becenév"
+        variant="outlined"
+        :error-messages="nicknameError"
+      />
+    </v-card-text>
+    <v-card-actions>
+      <v-btn color="primary" @click="saveNickname">Mentés</v-btn>
+      <v-btn color="secondary" @click="closeNicknameModal">Mégse</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+
   </div>
 </template>
 
@@ -92,6 +94,8 @@ export default defineComponent({
     const displayedName = ref(props.name.replace('%20', ' '));
     const nickname = ref<string | null>(null);
       const isBlocked = ref(false);
+      const nicknameError = ref<string | null>(null);
+
 
 
     const fetchNickname = async () => {
@@ -137,19 +141,26 @@ export default defineComponent({
     };
 
     const saveNickname = async () => {
-      try {
-        await axios.post('http://localhost:3000/notify/nicknames', {
-          sender_id: loggedInUserId,
-          receiver_id: props.friendId,
-          nickname: newNickname.value,
-        });
-        nickname.value = newNickname.value;
-        displayedName.value = newNickname.value;
-        closeNicknameModal();
-      } catch (error) {
-        console.error('Error saving nickname:', error);
-      }
+        nicknameError.value = null;
+        if (newNickname.value.trim() === "") {
+          nicknameError.value = "A becenév mező nem lehet üres.";
+          return;
+        }
+        try {
+          await axios.post("http://localhost:3000/notify/nicknames", {
+            sender_id: loggedInUserId,
+            receiver_id: props.friendId,
+            nickname: newNickname.value,
+          });
+          nickname.value = newNickname.value;
+          displayedName.value = newNickname.value;
+          closeNicknameModal();
+        } catch (error) {
+          console.error("Error saving nickname:", error);
+          nicknameError.value = "Hiba történt a becenév mentése közben.";
+        }
     };
+
 
     const fetchMessages = async (friendId:number) => {
       try {
@@ -237,6 +248,7 @@ export default defineComponent({
       saveNickname,
       displayedName,
       isBlocked,
+      nicknameError,
     };
   },
 });

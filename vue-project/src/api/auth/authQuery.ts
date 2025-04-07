@@ -104,14 +104,4 @@ export const useGetForgottenPassword = () => {
   });
 };
 
-const putForgottenPassword = async (token: string, data: ForgottenSetPasswordParam) => {
-  const response = await axiosClient.put(`http://localhost:3000/user/password-reset/${token}`, data);
-  return response.data;
-};
 
-export const usePutForgottenPassword = () => {
-  return useMutation({
-    mutationFn: ({ token, data }: { token: string; data: ForgottenSetPasswordParam }) =>
-      putForgottenPassword(token, data),
-  });
-};

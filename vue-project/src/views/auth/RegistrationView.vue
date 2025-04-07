@@ -133,6 +133,9 @@ const error = ref<string | null>(null);
 const message = ref('');
 const isRegistering = ref(false);
 const realVerificationCode = ref('');
+const theEmailAlreadyExists = ref('');
+const thePhoneNumberAlreadyExists = ref('');
+
 
 const { mutate: register } = useRegistration();
 
@@ -283,6 +286,25 @@ const handleRegistration = async () => {
     isRegistering.value = false;
     return;
   }
+  const response = await axios.post(
+    'http://localhost:3000/user/checkEmailandPhoneNumberExists',
+    { email: registrationData.email , phoneNumber: registrationData.phoneNumber});
+  theEmailAlreadyExists.value = response.data.exists;
+  console.log(theEmailAlreadyExists.value)
+  console.log(theEmailAlreadyExists.value[0])
+  console.log(theEmailAlreadyExists.value[1])
+  
+  if(String(theEmailAlreadyExists.value[0])=="true"){
+    emailError.value = "Az email már regisztrálva van."
+    isRegistering.value = false;
+    return;
+  }
+  if(String(theEmailAlreadyExists.value[1])=="true"){
+    phoneNumberError.value = "A telefonszám már regisztrálva van."
+    isRegistering.value = false;
+    return;
+  }
+
 
   isVerificationModalOpen.value = true;
   try {

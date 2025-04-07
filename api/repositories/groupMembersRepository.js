@@ -1,4 +1,3 @@
-
 const db = require("../db/dbContext");
 
 class GroupMembersRepository {
@@ -9,13 +8,13 @@ class GroupMembersRepository {
     }
 
     async addMember(member) {
-        const newMember =  await this.GroupMembers.create({
+        const newMember = await this.GroupMembers.create({
             user_id: member.user_id,
             group_id: member.group_id,
             role: member.role,
             status: member.status
         });
-        
+
         return newMember;
     }
     async getGroupMemberRole(userId, groupId) {
@@ -27,12 +26,12 @@ class GroupMembersRepository {
                 },
                 attributes: ['role'],
             });
-    
+
             if (!groupMember) {
-                return null; 
+                return null;
             }
-            
-            
+
+
             return groupMember.role;
         } catch (error) {
             console.error('Error getting group member role:', error);
@@ -41,21 +40,21 @@ class GroupMembersRepository {
     }
     async deleteNotificationBySenderAndReceiver(groupId, userId) {
         try {
-            
-           return await this.GroupMembers.destroy({
-               where: { group_id: groupId, user_id: userId },
-           });
-       } catch (error) {
-           console.error("Error in deleteNotificationBySenderAndReceiver repository:", error);
-           throw error;
-       }
-     }
 
-     async getGroupMembers(groupId) {
+            return await this.GroupMembers.destroy({
+                where: { group_id: groupId, user_id: userId },
+            });
+        } catch (error) {
+            console.error("Error in deleteNotificationBySenderAndReceiver repository:", error);
+            throw error;
+        }
+    }
+
+    async getGroupMembers(groupId) {
         return await this.GroupMembers.findAll({
             where: { group_id: groupId },
-            include: [{ model: this.User, as: "user", attributes: ['id','firstname','lastname'] }],
-            attributes: ['user_id','role','nickname', 'status'], 
+            include: [{ model: this.User, as: "user", attributes: ['id', 'firstname', 'lastname'] }],
+            attributes: ['user_id', 'role', 'nickname', 'status'],
         });
     }
 
@@ -67,11 +66,11 @@ class GroupMembersRepository {
                     group_id: groupId,
                 },
             });
-    
+
             if (!groupMember) {
                 throw new Error('Group member not found');
             }
-    
+
             groupMember.role = 'moderator';
             await groupMember.save();
         } catch (error) {
@@ -87,27 +86,27 @@ class GroupMembersRepository {
                 as: 'group',
                 attributes: ['id', 'name']
             }],
-            attributes: ['status'], 
+            attributes: ['status'],
         });
         return groups.map(groupMember => ({
             id: groupMember.group.id,
             name: groupMember.group.name,
-            status: groupMember.status, 
+            status: groupMember.status,
         }));
     }
     async deleteNotificationBySenderAndReceiver(groupId, userId) {
         try {
-    
-           return await this.GroupMembers.destroy({
-               where: { group_id: groupId, user_id: userId },
-           });
-       } catch (error) {
-           console.error("Error in deleteNotificationBySenderAndReceiver repository:", error);
-           throw error;
-       }
-     }
 
-     async deleteMembersByGroupId(groupId) {
+            return await this.GroupMembers.destroy({
+                where: { group_id: groupId, user_id: userId },
+            });
+        } catch (error) {
+            console.error("Error in deleteNotificationBySenderAndReceiver repository:", error);
+            throw error;
+        }
+    }
+
+    async deleteMembersByGroupId(groupId) {
         try {
             return await this.GroupMembers.destroy({
                 where: { group_id: groupId },
@@ -117,7 +116,7 @@ class GroupMembersRepository {
             throw error;
         }
     }
-    
+
 
     async updateNickname(memberId, nickname) {
         return await this.GroupMembers.update(
@@ -130,16 +129,11 @@ class GroupMembersRepository {
         return await this.GroupMembers.destroy({ where: { id: memberId } });
     }
 
-    async getUsers() {
-        return await this.User.findAll({
-            attributes: ['id', 'firstname', 'lastname'],
-        });
-    }
-    async getGroup(groupId) { 
+    async getGroup(groupId) {
         return await this.Groups.findByPk(groupId);
     }
 
-    
+
 
     async updateStatus(userId, groupId, status) {
         try {
@@ -169,11 +163,11 @@ class GroupMembersRepository {
                     group_id: groupId,
                 },
             });
-    
+
             if (!groupMember) {
                 throw new Error('Group member not found');
             }
-    
+
             groupMember.role = 'member';
             await groupMember.save();
         } catch (error) {
@@ -182,7 +176,7 @@ class GroupMembersRepository {
         }
     }
 
-    async updateNickname(groupId, userId, nickname) { 
+    async updateNickname(groupId, userId, nickname) {
         try {
             const groupMember = await this.GroupMembers.findOne({
                 where: {

@@ -32,12 +32,7 @@ exports.isBlockedUser= async (req,res,next)=>{
     }
 }
 
-exports.getAllUsers = async (req, res, next) =>
-    {
-        const User = await usersService.getUsers();
 
-        res.status(200).json(User);
-    }
     exports.getUser = async (req, res, next) => {
         const { loggedInEmail } = req.params; 
     
@@ -150,7 +145,7 @@ exports.resetPassword = async (req, res) => {
         const user = await userRepository.findUserByEmailHash(emailhash);
 
         if (!user) {
-            return res.status(404).json({ error: 'Invalid or expired link' });
+            return res.status(404).json({ error: 'A link sajnos lejárt kérlek igényelj egy újat.' });
         }
 
         if (user.passwordResetTokenExpiry < new Date()) {
@@ -175,6 +170,7 @@ exports.sendForgottenPasswordEmail = async (req, res) => {
     
     
     try {
+        console.log(user)
         const forgottenPasswordEmail = await usersService.forgottenPasswordEmail(email,user.emailHash);
         res.json({ message: 'Verification code sent!', forgottenPasswordEmail }); 
     } catch (error) {
@@ -195,6 +191,18 @@ exports.checkEmailExists = async (req, res) => {
         res.status(500).json({ error: 'Database error' });
     }
 };
+
+exports.checkEmailandPhoneNumberExists = async (req, res) => {
+    const { email, phoneNumber } = req.body;
+    try {
+        const exists = await usersService.checkEmailandPhoneNumberExists(email, phoneNumber);
+        console.log(exists)
+        res.json({ exists });
+    } catch (error) {
+        res.status(500).json({ error: 'Database error' });
+    }
+};
+
 
 exports.changePassword = async (req, res) => {
     const { userId, oldPassword, newPassword } = req.body;

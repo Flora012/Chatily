@@ -1,7 +1,6 @@
-
 const db = require("../db/dbContext");
-const { Op } = require("sequelize"); 
-const {Blocks } = require('../db/dbContext');
+const { Op } = require("sequelize");
+const { Blocks } = require('../db/dbContext');
 
 class UserRepository {
     constructor(db) {
@@ -21,7 +20,7 @@ class UserRepository {
                         })).map(block => block.receiver_id),
                     },
                 },
-                attributes: ['id', 'firstname', 'lastname', 'email', 'profilePicture'], 
+                attributes: ['id', 'firstname', 'lastname', 'email', 'profilePicture'],
             });
             return blocked;
         } catch (error) {
@@ -32,17 +31,14 @@ class UserRepository {
 
     async isBlocked(senderId, receiverId) {
         try {
-            
-            
-            
             const isBlocked = await Blocks.findOne({
                 where: { sender_id: receiverId, receiver_id: senderId }
             });
-            
-            return !!isBlocked; 
+
+            return !!isBlocked;
         } catch (error) {
             console.error('Error checking blocked status in repository:', error);
-            throw error; 
+            throw error;
         }
     }
 
@@ -56,45 +52,46 @@ class UserRepository {
                     ],
                 },
             });
-            
+
         } catch (error) {
             console.error('Error unblocking user in repository:', error);
             throw error;
         }
     }
-    
+
 
     async createUser(user) {
-        
+
         const existingUser = await this.Users.findOne({ where: { email: user.email } });
         if (existingUser) {
             throw new Error('Már létezik ilyen e-mail címmel felhasználó!');
         }
 
-        
+
         const newUser = await this.Users.create({
             firstname: user.firstname,
             lastname: user.lastname,
             email: user.email,
             phoneNumber: user.phoneNumber,
-            passwordHash: user.passwordHash, 
+            passwordHash: user.passwordHash,
+            emailHash: user.emailHash,
         });
 
         return newUser;
     }
     async searchUsers(param, loggedInEmail) {
-        const user = await this.getUserByEmail(loggedInEmail); 
-        
+        const user = await this.getUserByEmail(loggedInEmail);
+
         if (!user) {
-            
+
             console.error("User not found for email:", loggedInEmail);
-            return []; 
+            return [];
         }
-        const userId = user.id; 
-        
-        
+        const userId = user.id;
+
+
         const friends = await this.getFriends(userId);
-        
+
         return await this.Users.findAll({
             where: {
                 [Op.and]: [
@@ -104,8 +101,8 @@ class UserRepository {
                             { lastname: { [Op.like]: `%${param}%` } },
                         ],
                     },
-                    { id: { [Op.notIn]: friends } }, 
-                    { id: { [Op.ne]: userId } },     
+                    { id: { [Op.notIn]: friends } },
+                    { id: { [Op.ne]: userId } },
                 ],
             },
         });
@@ -121,8 +118,8 @@ class UserRepository {
                 {
                     model: this.Friendships,
                     as: 'friendshipsReceiver',
-                    where: { status: { [Op.in]: ['accepted', 'blocked'] } }, 
-                    required: false, 
+                    where: { status: { [Op.in]: ['accepted', 'blocked'] } },
+                    required: false,
                     include: [{
                         model: this.Users,
                         as: 'sender',
@@ -133,8 +130,8 @@ class UserRepository {
 
                     model: this.Friendships,
                     as: 'friendshipsSender',
-                    where: { status: { [Op.in]: ['accepted', 'blocked'] } }, 
-                    required: false, 
+                    where: { status: { [Op.in]: ['accepted', 'blocked'] } },
+                    required: false,
                     include: [{
                         model: this.Users,
                         as: 'receiver',
@@ -161,10 +158,10 @@ class UserRepository {
         return Array.from(friends);
     }
 
-    async updateUserEmail(userId, newEmail,hashedEmail) {
+    async updateUserEmail(userId, newEmail, hashedEmail) {
         try {
-            
-            const [rowsUpdated] = await this.Users.update({ email: newEmail , emailHash: hashedEmail}, { where: { id: userId } });
+
+            const [rowsUpdated] = await this.Users.update({ email: newEmail, emailHash: hashedEmail }, { where: { id: userId } });
             if (rowsUpdated === 0) {
                 throw new Error('User not found');
             }
@@ -176,31 +173,31 @@ class UserRepository {
 
     async updateUserPassword(userId, newHashedPassword) {
         try {
-          const [rowsUpdated] = await this.Users.update({ passwordHash: newHashedPassword }, { where: { id: userId } });
-          
-          if (rowsUpdated === 0) {
-            throw new Error('User not found');
-          }
-        } catch (error) {
-          console.error('Error updating user password in repository:', error);
-          throw error;
-        }
-      }
+            const [rowsUpdated] = await this.Users.update({ passwordHash: newHashedPassword }, { where: { id: userId } });
 
-      
+            if (rowsUpdated === 0) {
+                throw new Error('User not found');
+            }
+        } catch (error) {
+            console.error('Error updating user password in repository:', error);
+            throw error;
+        }
+    }
+
+
 
     async deleteAccount(userId) {
         try {
             const user = await this.Users.findByPk(userId);
             if (!user) throw new Error('Felhasználó nem található');
 
-            
+
             await this.anonymizeUserInGroups(userId);
 
-            
+
             await this.deleteAdminGroups(userId);
 
-            
+
             const [rowsUpdated] = await this.Users.update({
                 firstname: 'Ismeretlen',
                 lastname: '',
@@ -224,8 +221,8 @@ class UserRepository {
     }
 
     async anonymizeUserInGroups(userId) {
-        
-        const groups = await this.getGroupMemberships(userId, false); 
+
+        const groups = await this.getGroupMemberships(userId, false);
 
         await Promise.all(groups.map(async (group) => {
             await this.anonymizeUserInGroup(userId, group.id);
@@ -233,8 +230,8 @@ class UserRepository {
     }
 
     async deleteAdminGroups(userId) {
-        
-        const groups = await this.getGroupMemberships(userId, true); 
+
+        const groups = await this.getGroupMemberships(userId, true);
 
         await Promise.all(groups.map(async (group) => {
             await this.deleteGroup(group.id);
@@ -242,13 +239,13 @@ class UserRepository {
     }
 
     async getGroupMemberships(userId, isAdmin) {
-        
+
         return await this.Users.findAll({
             where: { id: userId },
             include: [{
-                model: this.Groups, 
+                model: this.Groups,
                 through: {
-                    where: { role: isAdmin ? 'admin' : { [Op.ne]: 'admin' } } 
+                    where: { role: isAdmin ? 'admin' : { [Op.ne]: 'admin' } }
                 },
                 attributes: ['id']
             }]
@@ -256,7 +253,7 @@ class UserRepository {
     }
 
     async anonymizeUserInGroup(userId, groupId) {
-        
+
         await this.GroupMembers.update({
             firstname: 'Ismeretlen',
             lastname: ''
@@ -268,18 +265,18 @@ class UserRepository {
         });
     }
 
-    async  findUserByVerificationCode(email, code) {
+    async findUserByVerificationCode(email, code) {
         return await User.findOne({ where: { email, verificationCode: code } });
     }
-    
-    async  updateUserVerificationStatus(userId, verified, verificationCode) {
+
+    async updateUserVerificationStatus(userId, verified, verificationCode) {
         await User.update({ verified, verificationCode }, { where: { id: userId } });
     }
 
     async deleteGroup(groupId) {
-        
+
         await this.Groups.destroy({ where: { id: groupId } });
-        
+
     }
 
 
@@ -298,35 +295,35 @@ class UserRepository {
     }
     async updatePasswordResetExpiry(email, expiryTime) {
         try {
-            
+
             const [affectedRows, updatedUsers] = await this.Users.update(
                 { passwordResetTokenExpiry: expiryTime },
-                { where: { email: email }, returning: true } 
+                { where: { email: email }, returning: true }
             );
-            
+
             if (affectedRows === 0) {
-                
+
                 return null;
             }
-    
-            
-            return updatedUsers[0]; 
+
+
+            return updatedUsers[0];
         } catch (error) {
             console.error('Error updating password reset expiry:', error);
             throw error;
         }
     }
-    
-    
+
+
 
     async findUserByEmailHash(emailhash) {
         return await this.Users.findOne({ where: { emailHash: emailhash } });
     }
-    
+
     async updateUserPassword(userId, newPasswordHash) {
         return await this.Users.update({ passwordHash: newPasswordHash }, { where: { id: userId } });
     }
-    
+
     async clearPasswordResetToken(userId) {
         return await this.Users.update({ emailHash: null, passwordResetTokenExpiry: null }, { where: { id: userId } });
     }
@@ -340,20 +337,21 @@ class UserRepository {
 
     async getUserByEmailFull(email) {
         return await this.Users.findOne({
-            where: { email }});
+            where: { email }
+        });
     }
 
 
-    
+
     async getUserById(UserId) {
-        
+
         return await this.Users.findOne({ where: { id: UserId } });
     }
 
     async getUserByIdForMessages(userId) {
         try {
             return await this.Users.findByPk(userId, {
-                attributes: ['id', 'firstname', 'lastname', 'email','profilePicture'] 
+                attributes: ['id', 'firstname', 'lastname', 'email', 'profilePicture']
             });
         } catch (error) {
             console.error('Error in getUserById repository:', error);
@@ -361,23 +359,29 @@ class UserRepository {
         }
     }
 
-    async getUsers() {
-        return await this.Users.findAll();
-    }
-
-    async updateUser(id, user) {
-        return await this.Users.update(user, { where: { id } });
-    }
-
-    async deleteUser(id) {
-        return await this.Users.destroy({ where: { id } });
-    }
-
     async getUserPhoneNumber(phoneNumber) {
-        return await this.Users.findOne({ where: { phoneNumber } });
+        const normalizedPhoneNumber = this.normalizePhoneNumber(phoneNumber);
+
+        return await this.Users.findOne({
+            where: {
+                phoneNumber: {
+                    [Op.like]: `%${normalizedPhoneNumber}%`
+                }
+            }
+        });
     }
 
-    
+    normalizePhoneNumber(phoneNumber) {
+        if (phoneNumber.startsWith('+36')) {
+            console.log('06' + phoneNumber.substring(3))
+            return phoneNumber.substring(3);
+        } else if (phoneNumber.startsWith('06')) {
+            return phoneNumber.substring(2);
+        }
+        return phoneNumber;
+    }
+
+
 
 
 }

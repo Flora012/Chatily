@@ -7,7 +7,6 @@ import SearchForNameView from '@/views/search/SearchForNameView.vue';
 import NotificationView from '@/views/notification/NotificationView.vue';
 import { AuthController } from "./authController";
 import { AuthService } from './authService';
-import ResetPasswordView from '@/views/auth/ResetPasswordView.vue';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -43,16 +42,8 @@ const routes: RouteRecordRaw[] = [
     path: '/forgotten-password/:emailHash',
     name: 'forgotten-password',
     component: ForgottenPasswordView,
-    beforeEnter: (to, from, next) => {
-      next();
-    }
   },
-  {
-    path: '/reset-password',
-    name: 'reset-password',
-    component: ResetPasswordView,
-    beforeEnter: AuthController.requireAuth
-  },
+  
   {
     path: '/profile',
     name: 'profile',
@@ -95,8 +86,13 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const publicPages = ['/login', '/registration', '/forgotten-password'];
+  const publicPages = ['/login', '/registration', '/forgotten-password/'];
+  console.log(to.path.startsWith(publicPages[2]))
+  console.log(to.path)
+  console.log(String(to.path))
   const authRequired = !publicPages.some(page => to.path.startsWith(page));
+  console.log(authRequired);
+  
   const loggedIn = AuthService.isAuthenticated();
 
   if (authRequired && !loggedIn) {

@@ -1,21 +1,19 @@
-
-const { Op } = require("sequelize"); 
-
-const {Blocks } = require('../db/dbContext');
+const { Op } = require("sequelize");
+const { Blocks } = require('../db/dbContext');
 
 class FriendshipRepository {
     constructor(Friendships, User, Messages, Nickname) {
         this.Friendships = Friendships;
         this.User = User;
         this.Messages = Messages;
-        this.Nickname = Nickname; 
+        this.Nickname = Nickname;
     }
     async getPendingRequests(userId, friendId) {
         return await this.Friendships.findAll({
             where: {
                 [Op.or]: [
-                    { receiver_id: userId, sender_id: friendId }, 
-                    { receiver_id: friendId, sender_id: userId } 
+                    { receiver_id: userId, sender_id: friendId },
+                    { receiver_id: friendId, sender_id: userId }
                 ],
                 status: 'pending'
             }
@@ -30,18 +28,18 @@ class FriendshipRepository {
                 ],
             },
         });
-        return !!friendship; 
+        return !!friendship;
     }
     async acceptFriendRequest(senderId, receiverId) {
         try {
             const friendRequest = await this.Friendships.findOne({
-                where: { receiver_id: receiverId, sender_id: senderId, status: 'pending' } 
+                where: { receiver_id: receiverId, sender_id: senderId, status: 'pending' }
             });
 
             if (!friendRequest) {
                 throw new Error('Nem található függőben lévő barátjelölés!');
             }
-            
+
             await this.Friendships.update(
                 { status: 'accepted' },
                 {
@@ -112,7 +110,7 @@ class FriendshipRepository {
                     model: this.Friendships,
                     as: 'friendshipsReceiver',
                     where: { status: 'accepted' },
-                    required: false, 
+                    required: false,
                     include: [{
                         model: this.User,
                         as: 'sender',
@@ -123,7 +121,7 @@ class FriendshipRepository {
                     model: this.Friendships,
                     as: 'friendshipsSender',
                     where: { status: 'accepted' },
-                    required: false, 
+                    required: false,
                     include: [{
                         model: this.User,
                         as: 'receiver',
@@ -149,7 +147,7 @@ class FriendshipRepository {
 
         return Array.from(friends);
     }
-    
+
     async createOrUpdateNickname(data) {
         const existingNickname = await this.Nickname.findOne({
             where: {
@@ -176,47 +174,47 @@ class FriendshipRepository {
         });
     }
 
-    async deleteFriendship(userId, friendId) { 
+    async deleteFriendship(userId, friendId) {
         try {
-          
-          const friendshipToDelete = await this.Friendships.findOne({
-            where: {
-              [Op.and]: [
-                {
-                  [Op.or]: [{ sender_id: userId, receiver_id: friendId }, { sender_id: friendId, receiver_id: userId }],
-                },
-                { status: 'accepted' },
-              ],
-            },
-          });
-      
-          if (!friendshipToDelete) {
-            throw new Error('Friendship not found'); 
-          }
-      
-          
-          await this.Messages.destroy({
-            where: {
-              [Op.or]: [
-                { sender_id: userId, receiver_id: friendId },
-                { sender_id: friendId, receiver_id: userId },
-              ],
-            },
-          });
-      
-          
-          await friendshipToDelete.destroy();
-        } catch (error) {
-          console.error('Error deleting friendship in repository:', error);
-          throw error;
-        }
-      }
-      
-      
 
-      async getFriendsWithProfilePicture(userId) {
+            const friendshipToDelete = await this.Friendships.findOne({
+                where: {
+                    [Op.and]: [
+                        {
+                            [Op.or]: [{ sender_id: userId, receiver_id: friendId }, { sender_id: friendId, receiver_id: userId }],
+                        },
+                        { status: 'accepted' },
+                    ],
+                },
+            });
+
+            if (!friendshipToDelete) {
+                throw new Error('Friendship not found');
+            }
+
+
+            await this.Messages.destroy({
+                where: {
+                    [Op.or]: [
+                        { sender_id: userId, receiver_id: friendId },
+                        { sender_id: friendId, receiver_id: userId },
+                    ],
+                },
+            });
+
+
+            await friendshipToDelete.destroy();
+        } catch (error) {
+            console.error('Error deleting friendship in repository:', error);
+            throw error;
+        }
+    }
+
+
+
+    async getFriendsWithProfilePicture(userId) {
         try {
-            
+
             const blockedUserIds = await Blocks.findAll({
                 where: { sender_id: userId },
                 attributes: ['receiver_id']
@@ -236,7 +234,7 @@ class FriendshipRepository {
                             attributes: ['id', 'firstname', 'lastname', 'profilePicture'],
                             where: {
                                 id: {
-                                    [Op.notIn]: blockedUserIds 
+                                    [Op.notIn]: blockedUserIds
                                 }
                             }
                         }]
@@ -252,7 +250,7 @@ class FriendshipRepository {
                             attributes: ['id', 'firstname', 'lastname', 'profilePicture'],
                             where: {
                                 id: {
-                                    [Op.notIn]: blockedUserIds 
+                                    [Op.notIn]: blockedUserIds
                                 }
                             }
                         }]

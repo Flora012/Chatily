@@ -69,12 +69,9 @@ export default defineComponent({
         route.path.startsWith('/forgotten-password')
       );
     });
+    console.log(isAuthPage.value)
 
-    onMounted(() => {
-      if (!isLoggedIn.value && !isAuthPage.value) {
-        router.push('/login');
-      }
-    });
+
 
     return {
       logout,

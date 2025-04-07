@@ -955,7 +955,7 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 800px;
+  min-height: 733px;
   width: 100%;
 }
 
